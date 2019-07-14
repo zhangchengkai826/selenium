@@ -3,6 +3,7 @@
 #include <d3d12.h>
 #include "timer.h"
 #include <wrl/client.h>
+#include <string>
 
 class D3DApp
 {
@@ -28,11 +29,12 @@ protected:
 	static D3DApp *mApp;
 
 	HINSTANCE mhAppInst = nullptr; // application instance handle
+	HWND mhMainWnd = nullptr; // main window handle
+	std::wstring mMainWndCaption = L"Selenium";
 	bool mAppPaused = false;  // is the application paused?
 	bool mResizing = false;   // are the resize bars being dragged?
 	Timer mTimer;
 	Microsoft::WRL::ComPtr<ID3D12Device> md3dDevice;
 	int mClientWidth = 800;
 	int mClientHeight = 600;
-
 };

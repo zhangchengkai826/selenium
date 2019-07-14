@@ -13,6 +13,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 	try
 	{
 		SeleniumApp app(hInstance);
+		if (!app.Initialize())
+			return 0;
 		return 0;
 	}
 	catch (D3DException &e)

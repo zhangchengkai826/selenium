@@ -13,3 +13,10 @@ SeleniumApp::SeleniumApp(HINSTANCE hInstance)
 	mSceneBounds.Center = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	mSceneBounds.Radius = sqrtf(10.0f*10.0f + 15.0f*15.0f);
 }
+
+bool SeleniumApp::Initialize()
+{
+	if (!D3DApp::Initialize())
+		return false;
+	return true;
+}

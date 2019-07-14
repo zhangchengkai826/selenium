@@ -8,6 +8,8 @@ public:
 	SeleniumApp(const SeleniumApp &rhs) = delete;
 	SeleniumApp& operator=(const SeleniumApp &rhs) = delete;
 
+	virtual bool Initialize()override;
+
 private:
 	DirectX::BoundingSphere mSceneBounds;
 };

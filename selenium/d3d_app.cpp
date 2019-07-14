@@ -17,6 +17,8 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 }
 
 bool D3DApp::Initialize() {
+	if (!InitMainWindow())
+		return false;
 	return true;
 }
 
@@ -45,6 +47,23 @@ bool D3DApp::InitMainWindow() {
 		MessageBox(0, L"RegisterClass Failed.", 0, 0);
 		return false;
 	}
+
+	// Compute window rectangle dimensions based on requested client area dimensions.
+	RECT R = { 0, 0, mClientWidth, mClientHeight };
+	AdjustWindowRect(&R, WS_OVERLAPPEDWINDOW, false);
+	int width = R.right - R.left;
+	int height = R.bottom - R.top;
+
+	mhMainWnd = CreateWindow(L"MainWnd", mMainWndCaption.c_str(),
+		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, 0, 0, mhAppInst, 0);
+	if (!mhMainWnd)
+	{
+		MessageBox(0, L"CreateWindow Failed.", 0, 0);
+		return false;
+	}
+
+	ShowWindow(mhMainWnd, SW_SHOW);
+	UpdateWindow(mhMainWnd);
 
 	return true;
 }
