@@ -19,6 +19,7 @@ protected:
 	D3DApp &operator=(const D3DApp& rhs) = delete;
 
 	bool InitMainWindow();
+	bool InitDirect3D();
 
 	// Convenience overrides for handling mouse input.
 	virtual void OnMouseDown(WPARAM btnState, int x, int y) { }

@@ -1,6 +1,10 @@
 #include "d3d_app.h"
 #include <cassert>
 #include <windowsx.h>
+#include <wrl/client.h>
+#include "d3d_util.h"
+
+using namespace Microsoft::WRL;
 
 D3DApp* D3DApp::mApp = nullptr;
 D3DApp* D3DApp::GetApp()
@@ -18,6 +22,8 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 
 bool D3DApp::Initialize() {
 	if (!InitMainWindow())
+		return false;
+	if (!InitDirect3D())
 		return false;
 	return true;
 }
@@ -64,6 +70,20 @@ bool D3DApp::InitMainWindow() {
 
 	ShowWindow(mhMainWnd, SW_SHOW);
 	UpdateWindow(mhMainWnd);
+
+	return true;
+}
+
+bool D3DApp::InitDirect3D()
+{
+#if defined(DEBUG) || defined(_DEBUG) 
+	// Enable the D3D12 debug layer.
+	{
+		ComPtr<ID3D12Debug> debugController;
+		ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)));
+		debugController->EnableDebugLayer();
+	}
+#endif
 
 	return true;
 }
