@@ -143,11 +143,13 @@
     <ClCompile Include="d3d_util.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="selenium_app.cpp" />
+    <ClCompile Include="timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3d_app.h" />
     <ClInclude Include="d3d_util.h" />
     <ClInclude Include="selenium_app.h" />
+    <ClInclude Include="timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
