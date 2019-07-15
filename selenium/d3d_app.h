@@ -19,6 +19,8 @@ protected:
 	D3DApp(const D3DApp &rhs) = delete;
 	D3DApp &operator=(const D3DApp& rhs) = delete;
 
+	virtual void CreateRtvAndDsvDescriptorHeaps();
+
 	bool InitMainWindow();
 	bool InitDirect3D();
 
@@ -59,4 +61,7 @@ protected:
 	Microsoft::WRL::ComPtr<IDXGISwapChain> mSwapChain;
 
 	DXGI_FORMAT mBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mRtvHeap;
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mDsvHeap;
 };
