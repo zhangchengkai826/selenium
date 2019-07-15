@@ -25,6 +25,7 @@ bool D3DApp::Initialize() {
 		return false;
 	if (!InitDirect3D())
 		return false;
+	OnResize();
 	return true;
 }
 
@@ -187,6 +188,38 @@ void D3DApp::CreateRtvAndDsvDescriptorHeaps() {
 	dsvHeapDesc.NodeMask = 0;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(
 		&dsvHeapDesc, IID_PPV_ARGS(&mDsvHeap)));
+}
+
+void D3DApp::FlushCommandQueue() {
+	// Advance the fence value to mark commands up to this fence point.
+	mCurrentFence++;
+
+	// Add an instruction to the command queue to set a new fence point.  Because we 
+	// are on the GPU timeline, the new fence point won't be set until the GPU finishes
+	// processing all the commands prior to this Signal().
+	ThrowIfFailed(mCmdQueue->Signal(mFence.Get(), mCurrentFence));
+
+	// Wait until the GPU has completed commands up to this fence point.
+	if (mFence->GetCompletedValue() < mCurrentFence)
+	{
+		HANDLE eventHandle = CreateEventEx(NULL, NULL, NULL, EVENT_ALL_ACCESS);
+
+		// Fire event when GPU hits current fence.  
+		ThrowIfFailed(mFence->SetEventOnCompletion(mCurrentFence, eventHandle));
+
+		// Wait until the GPU hits current fence event is fired.
+		WaitForSingleObject(eventHandle, INFINITE);
+		CloseHandle(eventHandle);
+	}
+}
+
+void D3DApp::OnResize() {
+	assert(md3dDevice);
+	assert(mCmdAllocator);
+	assert(mSwapChain);
+
+	// Flush before changing any resources.
+	FlushCommandQueue();
 }
 
 LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)

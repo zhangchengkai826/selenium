@@ -19,6 +19,8 @@ protected:
 	D3DApp(const D3DApp &rhs) = delete;
 	D3DApp &operator=(const D3DApp& rhs) = delete;
 
+	virtual void OnResize();
+
 	virtual void CreateRtvAndDsvDescriptorHeaps();
 
 	bool InitMainWindow();
@@ -26,6 +28,8 @@ protected:
 
 	void CreateCommandObjects();
 	void CreateSwapChain();
+
+	void FlushCommandQueue();
 
 	// Convenience overrides for handling mouse input.
 	virtual void OnMouseDown(WPARAM btnState, int x, int y) { }
@@ -49,6 +53,7 @@ protected:
 	Microsoft::WRL::ComPtr<ID3D12Device> md3dDevice;
 	
 	Microsoft::WRL::ComPtr<ID3D12Fence> mFence;
+	UINT64 mCurrentFence = 0;
 	
 	UINT mRtvDescriptorSize = 0;
 	UINT mDsvDescriptorSize = 0;
