@@ -65,8 +65,12 @@ protected:
 
 	Microsoft::WRL::ComPtr<IDXGISwapChain> mSwapChain;
 
-	DXGI_FORMAT mBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+	DXGI_FORMAT mSwapChainBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mRtvHeap;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mDsvHeap;
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> mSwapChainBuffer[SwapChainBufferCount];
+	int mCurrSwapChainBuffer = 0;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mDepthStencilBuffer;
 };
