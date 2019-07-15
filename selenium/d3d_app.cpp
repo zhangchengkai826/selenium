@@ -113,6 +113,8 @@ bool D3DApp::InitDirect3D()
 	mCbvSrvUavDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	
 	CreateCommandObjects();
+	CreateSwapChain();
+
 	return true;
 }
 
@@ -137,6 +139,34 @@ void D3DApp::CreateCommandObjects() {
 	// to the command list we will Reset it, and it needs to be closed before
 	// calling Reset.
 	mCmdList->Close();
+}
+
+void D3DApp::CreateSwapChain() {
+	// Release the previous swapchain we will be recreating.
+	mSwapChain.Reset();
+
+	DXGI_SWAP_CHAIN_DESC sd;
+	sd.BufferDesc.Width = mClientWidth;
+	sd.BufferDesc.Height = mClientHeight;
+	sd.BufferDesc.RefreshRate.Numerator = 60;
+	sd.BufferDesc.RefreshRate.Denominator = 1;
+	sd.BufferDesc.Format = mBackBufferFormat;
+	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+	sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+	sd.SampleDesc.Count = 1;
+	sd.SampleDesc.Quality = 0;
+	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	sd.BufferCount = SwapChainBufferCount;
+	sd.OutputWindow = mhMainWnd;
+	sd.Windowed = true;
+	sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+
+	// Note: Swap chain uses queue to perform flush.
+	ThrowIfFailed(mdxgiFactory->CreateSwapChain(
+		mCmdQueue.Get(),
+		&sd,
+		mSwapChain.GetAddressOf()));
 }
 
 LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)

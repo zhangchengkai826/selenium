@@ -23,6 +23,7 @@ protected:
 	bool InitDirect3D();
 
 	void CreateCommandObjects();
+	void CreateSwapChain();
 
 	// Convenience overrides for handling mouse input.
 	virtual void OnMouseDown(WPARAM btnState, int x, int y) { }
@@ -31,6 +32,7 @@ protected:
 
 protected:
 	static D3DApp *mApp;
+	static const int SwapChainBufferCount = 2;
 
 	HINSTANCE mhAppInst = nullptr; // application instance handle
 	HWND mhMainWnd = nullptr; // main window handle
@@ -53,4 +55,8 @@ protected:
 	Microsoft::WRL::ComPtr<ID3D12CommandQueue> mCmdQueue;
 	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> mCmdAllocator;
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCmdList;
+
+	Microsoft::WRL::ComPtr<IDXGISwapChain> mSwapChain;
+
+	DXGI_FORMAT mBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 };
