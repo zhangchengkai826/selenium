@@ -22,6 +22,8 @@ protected:
 	bool InitMainWindow();
 	bool InitDirect3D();
 
+	void CreateCommandObjects();
+
 	// Convenience overrides for handling mouse input.
 	virtual void OnMouseDown(WPARAM btnState, int x, int y) { }
 	virtual void OnMouseUp(WPARAM btnState, int x, int y) { }
@@ -47,4 +49,8 @@ protected:
 	UINT mRtvDescriptorSize = 0;
 	UINT mDsvDescriptorSize = 0;
 	UINT mCbvSrvUavDescriptorSize = 0;
+
+	Microsoft::WRL::ComPtr<ID3D12CommandQueue> mCmdQueue;
+	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> mCmdAllocator;
+	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCmdList;
 };
