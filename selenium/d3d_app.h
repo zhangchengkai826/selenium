@@ -4,6 +4,7 @@
 #include "timer.h"
 #include <wrl/client.h>
 #include <string>
+#include <dxgi1_4.h>
 
 class D3DApp
 {
@@ -35,7 +36,15 @@ protected:
 	bool mAppPaused = false;  // is the application paused?
 	bool mResizing = false;   // are the resize bars being dragged?
 	Timer mTimer;
-	Microsoft::WRL::ComPtr<ID3D12Device> md3dDevice;
 	int mClientWidth = 800;
 	int mClientHeight = 600;
+
+	Microsoft::WRL::ComPtr<IDXGIFactory4> mdxgiFactory;
+	Microsoft::WRL::ComPtr<ID3D12Device> md3dDevice;
+	
+	Microsoft::WRL::ComPtr<ID3D12Fence> mFence;
+	
+	UINT mRtvDescriptorSize = 0;
+	UINT mDsvDescriptorSize = 0;
+	UINT mCbvSrvUavDescriptorSize = 0;
 };
