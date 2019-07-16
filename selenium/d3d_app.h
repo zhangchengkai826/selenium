@@ -74,4 +74,7 @@ protected:
 	Microsoft::WRL::ComPtr<ID3D12Resource> mSwapChainBuffer[SwapChainBufferCount];
 	int mCurrSwapChainBuffer = 0;
 	Microsoft::WRL::ComPtr<ID3D12Resource> mDepthStencilBuffer;
+
+	D3D12_VIEWPORT mScreenViewport;
+	D3D12_RECT mScissorRect;
 };
