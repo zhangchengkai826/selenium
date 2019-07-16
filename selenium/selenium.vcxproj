@@ -146,6 +146,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math_helper.cpp" />
     <ClCompile Include="selenium_app.cpp" />
+    <ClCompile Include="shadow_map.cpp" />
     <ClCompile Include="timer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -154,6 +155,7 @@
     <ClInclude Include="d3d_util.h" />
     <ClInclude Include="math_helper.h" />
     <ClInclude Include="selenium_app.h" />
+    <ClInclude Include="shadow_map.h" />
     <ClInclude Include="timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
