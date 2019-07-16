@@ -8,8 +8,8 @@
 using namespace DirectX;
 using namespace DirectX::PackedVector;
 
-SSAO::SSAO(ID3D12Device* device,
-	ID3D12GraphicsCommandList* cmdList,
+SSAO::SSAO(ID3D12Device *device,
+	ID3D12GraphicsCommandList *cmdList,
 	UINT width, UINT height) {
 	
 	md3dDevice = device;
