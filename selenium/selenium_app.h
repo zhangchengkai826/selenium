@@ -11,6 +11,9 @@
 #include "model.h"
 #include "mesh_geometry.h"
 #include "texture.h"
+#include <array>
+#include "d3dx12.h"
+#include <wrl/client.h>
 
 class SeleniumApp : public D3DApp {
 public:
@@ -23,6 +26,9 @@ public:
 private:
 	void LoadSkinnedModel();
 	void LoadTextures();
+	void BuildRootSignature();
+	
+	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> GetStaticSamplers();
 
 private:
 	DirectX::BoundingSphere mSceneBounds;
@@ -42,4 +48,6 @@ private:
 
 	std::unordered_map<std::string, std::unique_ptr<MeshGeometry>> mGeometries;
 	std::unordered_map<std::string, std::unique_ptr<Texture>> mTextures;
+
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> mRootSignature = nullptr;
 };
