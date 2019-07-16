@@ -1,5 +1,6 @@
 #include "selenium_app.h"
 #include <DirectXMath.h>
+#include "d3d_util.h"
 
 using namespace DirectX;
 
@@ -18,5 +19,11 @@ bool SeleniumApp::Initialize()
 {
 	if (!D3DApp::Initialize())
 		return false;
+
+	// Reset the command list to prep for initialization commands.
+	ThrowIfFailed(mCmdList->Reset(mCmdAllocator.Get(), nullptr));
+	
+	mCamera.SetPosition(0.0f, 2.0f, -15.0f);
+
 	return true;
 }

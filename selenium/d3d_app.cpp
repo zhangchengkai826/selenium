@@ -24,9 +24,13 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 bool D3DApp::Initialize() {
 	if (!InitMainWindow())
 		return false;
+
 	if (!InitDirect3D())
 		return false;
+
+	// Do the initial resize code.
 	OnResize();
+
 	return true;
 }
 

@@ -140,15 +140,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="camera.cpp" />
     <ClCompile Include="d3d_app.cpp" />
     <ClCompile Include="d3d_util.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="math_helper.cpp" />
     <ClCompile Include="selenium_app.cpp" />
     <ClCompile Include="timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="camera.h" />
     <ClInclude Include="d3d_app.h" />
     <ClInclude Include="d3d_util.h" />
+    <ClInclude Include="math_helper.h" />
     <ClInclude Include="selenium_app.h" />
     <ClInclude Include="timer.h" />
   </ItemGroup>
