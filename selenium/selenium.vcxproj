@@ -143,10 +143,12 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="d3d_app.cpp" />
     <ClCompile Include="d3d_util.cpp" />
+    <ClCompile Include="m3d_loader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math_helper.cpp" />
     <ClCompile Include="selenium_app.cpp" />
     <ClCompile Include="shadow_map.cpp" />
+    <ClCompile Include="skinned_data.cpp" />
     <ClCompile Include="ssao.cpp" />
     <ClCompile Include="timer.cpp" />
   </ItemGroup>
@@ -154,9 +156,11 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="d3d_app.h" />
     <ClInclude Include="d3d_util.h" />
+    <ClInclude Include="m3d_loader.h" />
     <ClInclude Include="math_helper.h" />
     <ClInclude Include="selenium_app.h" />
     <ClInclude Include="shadow_map.h" />
+    <ClInclude Include="skinned_data.h" />
     <ClInclude Include="ssao.h" />
     <ClInclude Include="timer.h" />
   </ItemGroup>

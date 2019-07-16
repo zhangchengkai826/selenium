@@ -1,6 +1,8 @@
 #include "selenium_app.h"
 #include <DirectXMath.h>
 #include "d3d_util.h"
+#include <vector>
+#include "m3d_loader.h"
 
 using namespace DirectX;
 
@@ -32,5 +34,16 @@ bool SeleniumApp::Initialize()
 		mCmdList.Get(),
 		mClientWidth, mClientHeight);
 
+	LoadSkinnedModel();
+
 	return true;
+}
+
+void SeleniumApp::LoadSkinnedModel() {
+	std::vector<M3DLoader::SkinnedVertex> vertices;
+	std::vector<std::uint16_t> indices;
+
+	M3DLoader m3dLoader;
+	m3dLoader.LoadM3d(mSkinnedModelFilename, vertices, indices,
+		mSkinnedSubsets, mSkinnedMats, mSkinnedData);
 }

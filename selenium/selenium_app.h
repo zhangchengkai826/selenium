@@ -5,6 +5,9 @@
 #include "shadow_map.h"
 #include <memory>
 #include "ssao.h"
+#include <string>
+#include "m3d_loader.h"
+#include "skinned_data.h"
 
 class SeleniumApp : public D3DApp {
 public:
@@ -15,6 +18,9 @@ public:
 	bool Initialize()override;
 
 private:
+	void LoadSkinnedModel();
+
+private:
 	DirectX::BoundingSphere mSceneBounds;
 
 	Camera mCamera;
@@ -22,4 +28,11 @@ private:
 	std::unique_ptr<ShadowMap> mShadowMap;
 
 	std::unique_ptr<SSAO> mSSAO;
+
+	std::string mSkinnedModelFilename = "Models\\soldier.m3d";
+	std::vector<M3DLoader::Subset> mSkinnedSubsets;
+	std::vector<M3DLoader::M3dMaterial> mSkinnedMats;
+	SkinnedData mSkinnedData;
+
+
 };

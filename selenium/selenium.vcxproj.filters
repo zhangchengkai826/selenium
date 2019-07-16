@@ -42,6 +42,12 @@
     <ClCompile Include="ssao.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="m3d_loader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="skinned_data.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="selenium_app.h">
@@ -66,6 +72,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ssao.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="m3d_loader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="skinned_data.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
