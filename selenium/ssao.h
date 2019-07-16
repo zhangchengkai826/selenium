@@ -13,6 +13,8 @@ public:
 
 private:
 	void BuildResources();
+	void BuildOffsetVectors();
+	void BuildRandomVectorTexture(ID3D12GraphicsCommandList* cmdList);
 
 public:
 	static const DXGI_FORMAT NormalMapFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -30,4 +32,9 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> mNormalMap;
 	Microsoft::WRL::ComPtr<ID3D12Resource> mAmbientMap0;
 	Microsoft::WRL::ComPtr<ID3D12Resource> mAmbientMap1;
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> mRandomVectorMap;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mRandomVectorMapUploadBuffer;
+
+	DirectX::XMFLOAT4 mOffsets[14];
 };
