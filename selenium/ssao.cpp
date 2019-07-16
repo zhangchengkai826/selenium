@@ -8,7 +8,7 @@
 using namespace DirectX;
 using namespace DirectX::PackedVector;
 
-SSAO::SSAO(ID3D12Device *device,
+Ssao::Ssao(ID3D12Device *device,
 	ID3D12GraphicsCommandList *cmdList,
 	UINT width, UINT height) {
 	
@@ -20,7 +20,7 @@ SSAO::SSAO(ID3D12Device *device,
 	BuildRandomVectorTexture(cmdList);
 }
 
-void SSAO::OnResize(UINT newWidth, UINT newHeight) {
+void Ssao::OnResize(UINT newWidth, UINT newHeight) {
 	if (mRenderTargetWidth != newWidth || mRenderTargetHeight != newHeight)
 	{
 		mRenderTargetWidth = newWidth;
@@ -40,7 +40,7 @@ void SSAO::OnResize(UINT newWidth, UINT newHeight) {
 	}
 }
 
-void SSAO::BuildResources()
+void Ssao::BuildResources()
 {
 	// Free the old resources if they exist.
 	mNormalMap = nullptr;
@@ -55,7 +55,7 @@ void SSAO::BuildResources()
 	texDesc.Height = mRenderTargetHeight;
 	texDesc.DepthOrArraySize = 1;
 	texDesc.MipLevels = 1;
-	texDesc.Format = SSAO::NormalMapFormat;
+	texDesc.Format = Ssao::NormalMapFormat;
 	texDesc.SampleDesc.Count = 1;
 	texDesc.SampleDesc.Quality = 0;
 	texDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
@@ -74,7 +74,7 @@ void SSAO::BuildResources()
 	// Ambient occlusion maps are at half resolution.
 	texDesc.Width = mRenderTargetWidth / 2;
 	texDesc.Height = mRenderTargetHeight / 2;
-	texDesc.Format = SSAO::AmbientMapFormat;
+	texDesc.Format = Ssao::AmbientMapFormat;
 
 	float ambientClearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	optClear = CD3DX12_CLEAR_VALUE(AmbientMapFormat, ambientClearColor);
@@ -96,7 +96,7 @@ void SSAO::BuildResources()
 		IID_PPV_ARGS(&mAmbientMap1)));
 }
 
-void SSAO::BuildOffsetVectors()
+void Ssao::BuildOffsetVectors()
 {
 	// Start with 14 uniformly distributed vectors.  We choose the 8 corners of the cube
 	// and the 6 center points along each cube face.  We always alternate the points on 
@@ -137,7 +137,7 @@ void SSAO::BuildOffsetVectors()
 	}
 }
 
-void SSAO::BuildRandomVectorTexture(ID3D12GraphicsCommandList* cmdList) {
+void Ssao::BuildRandomVectorTexture(ID3D12GraphicsCommandList* cmdList) {
 	D3D12_RESOURCE_DESC texDesc;
 	ZeroMemory(&texDesc, sizeof(D3D12_RESOURCE_DESC));
 	texDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;

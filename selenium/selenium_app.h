@@ -27,6 +27,7 @@ private:
 	void LoadSkinnedModel();
 	void LoadTextures();
 	void BuildRootSignature();
+	void BuildSsaoRootSignature();
 	
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> GetStaticSamplers();
 
@@ -37,7 +38,7 @@ private:
 
 	std::unique_ptr<ShadowMap> mShadowMap;
 
-	std::unique_ptr<SSAO> mSSAO;
+	std::unique_ptr<Ssao> mSsao;
 
 	std::string mSkinnedModelFilename = "Models\\soldier.m3d";
 	std::vector<M3DLoader::Subset> mSkinnedSubsets;
@@ -50,4 +51,5 @@ private:
 	std::unordered_map<std::string, std::unique_ptr<Texture>> mTextures;
 
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> mRootSignature = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> mSsaoRootSignature = nullptr;
 };

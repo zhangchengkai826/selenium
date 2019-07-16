@@ -3,9 +3,9 @@
 #include <wrl/client.h>
 #include <DirectXMath.h>
 
-class SSAO {
+class Ssao {
 public:
-	SSAO(ID3D12Device* device,
+	Ssao(ID3D12Device* device,
 		ID3D12GraphicsCommandList* cmdList,
 		UINT width, UINT height);
 
