@@ -8,6 +8,7 @@
 #include <string>
 #include "m3d_loader.h"
 #include "skinned_data.h"
+#include "model.h"
 
 class SeleniumApp : public D3DApp {
 public:
@@ -33,4 +34,5 @@ private:
 	std::vector<M3DLoader::Subset> mSkinnedSubsets;
 	std::vector<M3DLoader::M3dMaterial> mSkinnedMats;
 	SkinnedData mSkinnedData;
+	std::unique_ptr<SkinnedModel> mSkinnedModel;
 };

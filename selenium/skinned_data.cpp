@@ -18,3 +18,8 @@ void SkinnedData::Set(std::vector<int>& boneHierarchy,
 	mBoneOffsets = boneOffsets;
 	mAnimationClips = animationClips;
 }
+
+UINT SkinnedData::BoneCount()const
+{
+	return static_cast<UINT>(mBoneHierarchy.size());
+}

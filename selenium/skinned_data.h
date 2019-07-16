@@ -37,6 +37,7 @@ struct AnimationClip
 class SkinnedData
 {
 public:
+	UINT BoneCount()const;
 	void Set(
 		std::vector<int>& boneHierarchy,
 		std::vector<DirectX::XMFLOAT4X4>& boneOffsets,

@@ -158,6 +158,7 @@
     <ClInclude Include="d3d_util.h" />
     <ClInclude Include="m3d_loader.h" />
     <ClInclude Include="math_helper.h" />
+    <ClInclude Include="model.h" />
     <ClInclude Include="selenium_app.h" />
     <ClInclude Include="shadow_map.h" />
     <ClInclude Include="skinned_data.h" />

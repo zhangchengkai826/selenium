@@ -46,4 +46,12 @@ void SeleniumApp::LoadSkinnedModel() {
 	M3DLoader m3dLoader;
 	m3dLoader.LoadM3d(mSkinnedModelFilename, vertices, indices,
 		mSkinnedSubsets, mSkinnedMats, mSkinnedData);
+
+	mSkinnedModel = std::make_unique<SkinnedModel>();
+	mSkinnedModel->SkinnedData = &mSkinnedData;
+	mSkinnedModel->FinalTransforms.resize(mSkinnedData.BoneCount());
+	mSkinnedModel->ClipName = "Take1";
+	mSkinnedModel->TimePos = 0.0f;
+
+
 }
