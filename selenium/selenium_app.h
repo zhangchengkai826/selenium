@@ -33,6 +33,4 @@ private:
 	std::vector<M3DLoader::Subset> mSkinnedSubsets;
 	std::vector<M3DLoader::M3dMaterial> mSkinnedMats;
 	SkinnedData mSkinnedData;
-
-
 };

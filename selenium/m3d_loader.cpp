@@ -35,7 +35,27 @@ bool M3DLoader::LoadM3d(const std::string &filename,
 		std::vector<int> boneHierarchy;
 		std::unordered_map<std::string, AnimationClip> animationClips;
 
+		ReadMaterials(fin, numMaterials, mats);
+
 		return true;
 	}
 	return false;
+}
+
+void M3DLoader::ReadMaterials(std::ifstream &fin, UINT numMaterials, std::vector<M3dMaterial> &mats) {
+	std::string ignore;
+	mats.resize(numMaterials);
+
+	fin >> ignore; // materials header text
+	for (UINT i = 0; i < numMaterials; ++i)
+	{
+		fin >> ignore >> mats[i].Name;
+		fin >> ignore >> mats[i].DiffuseAlbedo.x >> mats[i].DiffuseAlbedo.y >> mats[i].DiffuseAlbedo.z;
+		fin >> ignore >> mats[i].FresnelR0.x >> mats[i].FresnelR0.y >> mats[i].FresnelR0.z;
+		fin >> ignore >> mats[i].Roughness;
+		fin >> ignore >> mats[i].AlphaClip;
+		fin >> ignore >> mats[i].MaterialTypeName;
+		fin >> ignore >> mats[i].DiffuseMapName;
+		fin >> ignore >> mats[i].NormalMapName;
+	}
 }

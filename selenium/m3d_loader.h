@@ -47,4 +47,7 @@ public:
 		std::vector<Subset> &subsets,
 		std::vector<M3dMaterial> &mats,
 		SkinnedData &skinnedData);
+
+private:
+	void ReadMaterials(std::ifstream& fin, UINT numMaterials, std::vector<M3dMaterial>& mats);
 };
