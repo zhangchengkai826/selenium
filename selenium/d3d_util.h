@@ -1,6 +1,8 @@
 #pragma once
 #include <Windows.h>
 #include <string>
+#include <wrl/client.h>
+#include <d3d12.h>
 
 #ifdef ThrowIfFailed
 #error ThrowIfFailed redefined!
@@ -32,4 +34,14 @@ public:
 	std::wstring FunctionName;
 	std::wstring Filename;
 	int LineNumber = -1;
+};
+
+class D3DUtil {
+public:
+	static Microsoft::WRL::ComPtr<ID3D12Resource> CreateDefaultBuffer(
+		ID3D12Device* device,
+		ID3D12GraphicsCommandList* cmdList,
+		const void* initData,
+		UINT64 sizeInBytes,
+		Microsoft::WRL::ComPtr<ID3D12Resource>& uploadBuffer);
 };

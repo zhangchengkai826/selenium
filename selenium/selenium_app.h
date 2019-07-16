@@ -9,6 +9,7 @@
 #include "m3d_loader.h"
 #include "skinned_data.h"
 #include "model.h"
+#include "mesh_geometry.h"
 
 class SeleniumApp : public D3DApp {
 public:
@@ -35,4 +36,6 @@ private:
 	std::vector<M3DLoader::M3dMaterial> mSkinnedMats;
 	SkinnedData mSkinnedData;
 	std::unique_ptr<SkinnedModel> mSkinnedModel;
+
+	std::unordered_map<std::string, std::unique_ptr<MeshGeometry>> mGeometries;
 };
