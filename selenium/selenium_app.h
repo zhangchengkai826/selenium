@@ -10,6 +10,7 @@
 #include "skinned_data.h"
 #include "model.h"
 #include "mesh_geometry.h"
+#include "texture.h"
 
 class SeleniumApp : public D3DApp {
 public:
@@ -21,6 +22,7 @@ public:
 
 private:
 	void LoadSkinnedModel();
+	void LoadTextures();
 
 private:
 	DirectX::BoundingSphere mSceneBounds;
@@ -34,8 +36,10 @@ private:
 	std::string mSkinnedModelFilename = "Models\\soldier.m3d";
 	std::vector<M3DLoader::Subset> mSkinnedSubsets;
 	std::vector<M3DLoader::M3dMaterial> mSkinnedMats;
+	std::vector<std::string> mSkinnedTextureNames;
 	SkinnedData mSkinnedData;
 	std::unique_ptr<SkinnedModel> mSkinnedModel;
 
 	std::unordered_map<std::string, std::unique_ptr<MeshGeometry>> mGeometries;
+	std::unordered_map<std::string, std::unique_ptr<Texture>> mTextures;
 };

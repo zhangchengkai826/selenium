@@ -48,6 +48,9 @@
     <ClCompile Include="skinned_data.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DDSTextureLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="selenium_app.h">
@@ -84,6 +87,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mesh_geometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DDSTextureLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
