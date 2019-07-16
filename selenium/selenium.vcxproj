@@ -147,6 +147,7 @@
     <ClCompile Include="math_helper.cpp" />
     <ClCompile Include="selenium_app.cpp" />
     <ClCompile Include="shadow_map.cpp" />
+    <ClCompile Include="ssao.cpp" />
     <ClCompile Include="timer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -156,6 +157,7 @@
     <ClInclude Include="math_helper.h" />
     <ClInclude Include="selenium_app.h" />
     <ClInclude Include="shadow_map.h" />
+    <ClInclude Include="ssao.h" />
     <ClInclude Include="timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

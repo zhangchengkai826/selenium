@@ -4,6 +4,7 @@
 #include "camera.h"
 #include "shadow_map.h"
 #include <memory>
+#include "ssao.h"
 
 class SeleniumApp : public D3DApp {
 public:
@@ -19,4 +20,6 @@ private:
 	Camera mCamera;
 
 	std::unique_ptr<ShadowMap> mShadowMap;
+
+	std::unique_ptr<SSAO> mSSAO;
 };

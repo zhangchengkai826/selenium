@@ -1,8 +1,6 @@
 #include "selenium_app.h"
 #include <DirectXMath.h>
 #include "d3d_util.h"
-#include "shadow_map.h"
-#include <memory>
 
 using namespace DirectX;
 
@@ -28,6 +26,11 @@ bool SeleniumApp::Initialize()
 	mCamera.SetPosition(0.0f, 2.0f, -15.0f);
 
 	mShadowMap = std::make_unique<ShadowMap>(md3dDevice.Get(), 2048, 2048);
+
+	mSSAO = std::make_unique<SSAO>(
+		md3dDevice.Get(),
+		mCmdList.Get(),
+		mClientWidth, mClientHeight);
 
 	return true;
 }
