@@ -38,6 +38,12 @@ bool M3DLoader::LoadM3d(const std::string &filename,
 		ReadMaterials(fin, numMaterials, mats);
 		ReadSubsetTable(fin, numMaterials, subsets);
 		ReadSkinnedVertices(fin, numVertices, vertices);
+		ReadTriangles(fin, numTriangles, indices);
+		ReadBoneOffsets(fin, numBones, boneOffsets);
+		ReadBoneHierarchy(fin, numBones, boneHierarchy);
+		ReadAnimationClips(fin, numBones, numAnimationClips, animationClips);
+		
+		skinnedData.Set(boneHierarchy, boneOffsets, animationClips);
 
 		return true;
 	}
@@ -106,4 +112,96 @@ void M3DLoader::ReadSkinnedVertices(std::ifstream& fin, UINT numVertices, std::v
 		vertices[i].BoneIndices[2] = (BYTE)boneIndices[2];
 		vertices[i].BoneIndices[3] = (BYTE)boneIndices[3];
 	}
+}
+
+void M3DLoader::ReadTriangles(std::ifstream& fin, UINT numTriangles, std::vector<USHORT>& indices)
+{
+	std::string ignore;
+	indices.resize(numTriangles * 3);
+
+	fin >> ignore; // triangles header text
+	for (UINT i = 0; i < numTriangles; ++i)
+	{
+		fin >> indices[i * 3 + 0] >> indices[i * 3 + 1] >> indices[i * 3 + 2];
+	}
+}
+
+void M3DLoader::ReadBoneOffsets(std::ifstream& fin, UINT numBones, std::vector<XMFLOAT4X4>& boneOffsets)
+{
+	std::string ignore;
+	boneOffsets.resize(numBones);
+
+	fin >> ignore; // BoneOffsets header text
+	for (UINT i = 0; i < numBones; ++i)
+	{
+		fin >> ignore >>
+			boneOffsets[i](0, 0) >> boneOffsets[i](0, 1) >> boneOffsets[i](0, 2) >> boneOffsets[i](0, 3) >>
+			boneOffsets[i](1, 0) >> boneOffsets[i](1, 1) >> boneOffsets[i](1, 2) >> boneOffsets[i](1, 3) >>
+			boneOffsets[i](2, 0) >> boneOffsets[i](2, 1) >> boneOffsets[i](2, 2) >> boneOffsets[i](2, 3) >>
+			boneOffsets[i](3, 0) >> boneOffsets[i](3, 1) >> boneOffsets[i](3, 2) >> boneOffsets[i](3, 3);
+	}
+}
+
+void M3DLoader::ReadBoneHierarchy(std::ifstream& fin, UINT numBones, std::vector<int>& boneHierarchy)
+{
+	std::string ignore;
+	boneHierarchy.resize(numBones);
+
+	fin >> ignore; // BoneHierarchy header text
+	for (UINT i = 0; i < numBones; ++i)
+	{
+		fin >> ignore >> boneHierarchy[i];
+	}
+}
+
+void M3DLoader::ReadAnimationClips(std::ifstream& fin, UINT numBones, UINT numAnimationClips,
+	std::unordered_map<std::string, AnimationClip>& animationClips)
+{
+	std::string ignore;
+	fin >> ignore; // AnimationClips header text
+	for (UINT clipIndex = 0; clipIndex < numAnimationClips; ++clipIndex)
+	{
+		std::string clipName;
+		fin >> ignore >> clipName;
+		fin >> ignore; // {
+
+		AnimationClip clip;
+		clip.BoneAnimations.resize(numBones);
+
+		for (UINT boneIndex = 0; boneIndex < numBones; ++boneIndex)
+		{
+			ReadBoneAnimation(fin, numBones, clip.BoneAnimations[boneIndex]);
+		}
+		fin >> ignore; // }
+
+		animationClips[clipName] = clip;
+	}
+}
+
+void M3DLoader::ReadBoneAnimation(std::ifstream& fin, UINT numBones, BoneAnimation& boneAnimation)
+{
+	std::string ignore;
+	UINT numKeyframes = 0;
+	fin >> ignore >> ignore >> numKeyframes;
+	fin >> ignore; // {
+
+	boneAnimation.Keyframes.resize(numKeyframes);
+	for (UINT i = 0; i < numKeyframes; ++i)
+	{
+		float t = 0.0f;
+		XMFLOAT3 p(0.0f, 0.0f, 0.0f);
+		XMFLOAT3 s(1.0f, 1.0f, 1.0f);
+		XMFLOAT4 q(0.0f, 0.0f, 0.0f, 1.0f);
+		fin >> ignore >> t;
+		fin >> ignore >> p.x >> p.y >> p.z;
+		fin >> ignore >> s.x >> s.y >> s.z;
+		fin >> ignore >> q.x >> q.y >> q.z >> q.w;
+
+		boneAnimation.Keyframes[i].TimePos = t;
+		boneAnimation.Keyframes[i].Translation = p;
+		boneAnimation.Keyframes[i].Scale = s;
+		boneAnimation.Keyframes[i].RotationQuat = q;
+	}
+
+	fin >> ignore; // }
 }

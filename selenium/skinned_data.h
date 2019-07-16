@@ -36,6 +36,12 @@ struct AnimationClip
 
 class SkinnedData
 {
+public:
+	void Set(
+		std::vector<int>& boneHierarchy,
+		std::vector<DirectX::XMFLOAT4X4>& boneOffsets,
+		std::unordered_map<std::string, AnimationClip>& animationClips);
+
 private:
 	// Gives parentIndex of ith bone.
 	std::vector<int> mBoneHierarchy;

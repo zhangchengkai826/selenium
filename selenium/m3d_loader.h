@@ -52,4 +52,9 @@ private:
 	void ReadMaterials(std::ifstream& fin, UINT numMaterials, std::vector<M3dMaterial>& mats);
 	void ReadSubsetTable(std::ifstream& fin, UINT numSubsets, std::vector<Subset>& subsets);
 	void ReadSkinnedVertices(std::ifstream& fin, UINT numVertices, std::vector<SkinnedVertex>& vertices);
+	void ReadTriangles(std::ifstream& fin, UINT numTriangles, std::vector<USHORT>& indices);
+	void ReadBoneOffsets(std::ifstream& fin, UINT numBones, std::vector<DirectX::XMFLOAT4X4>& boneOffsets);
+	void ReadBoneHierarchy(std::ifstream& fin, UINT numBones, std::vector<int>& boneHierarchy);
+	void ReadAnimationClips(std::ifstream& fin, UINT numBones, UINT numAnimationClips, std::unordered_map<std::string, AnimationClip>& animationClips);
+	void ReadBoneAnimation(std::ifstream& fin, UINT numBones, BoneAnimation& boneAnimation);
 };
