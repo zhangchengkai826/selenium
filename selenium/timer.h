@@ -4,6 +4,9 @@ class Timer
 {
 public:
 	Timer();
+
+	float TotalTime()const; // in seconds
+
 	void Reset(); 
 	void Start(); // Call when unpaused.
 	void Stop();  // Call when paused.

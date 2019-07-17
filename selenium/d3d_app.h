@@ -40,6 +40,8 @@ protected:
 
 	void FlushCommandQueue();
 
+	void CalculateFrameStats();
+
 protected:
 	static D3DApp *mApp;
 	static const int SwapChainBufferCount = 2;
