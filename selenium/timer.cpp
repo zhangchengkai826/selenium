@@ -110,3 +110,8 @@ float Timer::TotalTime()const
 		return (float)(((mCurrTime - mPausedTime) - mBaseTime)*mSecondsPerCount);
 	}
 }
+
+float Timer::DeltaTime()const
+{
+	return (float)mDeltaTime;
+}

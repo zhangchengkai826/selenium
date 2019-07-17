@@ -52,6 +52,8 @@ private:
 	void BuildFrameResources();
 	void BuildPSOs();
 
+	void OnKeyboardInput(const Timer& gt);
+
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> GetStaticSamplers();
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE GetCbvSrvUavCpuDescriptorHandle(int indexInHeap)const;

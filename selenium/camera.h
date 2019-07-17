@@ -14,6 +14,13 @@ public:
 	void Pitch(float angle);
 	void RotateY(float angle);
 
+	// Strafe/Walk the camera a distance d.
+	void Strafe(float d);
+	void Walk(float d);
+
+	// After modifying camera position/orientation, call to rebuild the view matrix.
+	void UpdateViewMatrix();
+
 private:
 	// Camera coordinate system with coordinates relative to world space.
 	DirectX::XMFLOAT3 mPosition = { 0.0f, 0.0f, 0.0f };
@@ -31,5 +38,7 @@ private:
 
 	bool mViewDirty = true;
 
+	// Cache View/Proj matrices.
+	DirectX::XMFLOAT4X4 mView = MathHelper::Identity4x4();
 	DirectX::XMFLOAT4X4 mProj = MathHelper::Identity4x4();
 };

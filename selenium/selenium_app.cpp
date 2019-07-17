@@ -1200,7 +1200,7 @@ void SeleniumApp::OnMouseMove(WPARAM btnState, int x, int y)
 
 void SeleniumApp::Update(const Timer& gt)
 {
-	//OnKeyboardInput(gt);
+	OnKeyboardInput(gt);
 
 	//// Cycle through the circular frame resource array.
 	//mCurrFrameResourceIndex = (mCurrFrameResourceIndex + 1) % gNumFrameResources;
@@ -1368,4 +1368,23 @@ void SeleniumApp::Draw(const Timer& gt)
 	//// Because we are on the GPU timeline, the new fence point won't be 
 	//// set until the GPU finishes processing all the commands prior to this Signal().
 	//mCommandQueue->Signal(mFence.Get(), mCurrentFence);
+}
+
+void SeleniumApp::OnKeyboardInput(const Timer& gt)
+{
+	const float dt = gt.DeltaTime();
+
+	if (GetAsyncKeyState('W') & 0x8000)
+		mCamera.Walk(10.0f*dt);
+
+	if (GetAsyncKeyState('S') & 0x8000)
+		mCamera.Walk(-10.0f*dt);
+
+	if (GetAsyncKeyState('A') & 0x8000)
+		mCamera.Strafe(-10.0f*dt);
+
+	if (GetAsyncKeyState('D') & 0x8000)
+		mCamera.Strafe(10.0f*dt);
+
+	mCamera.UpdateViewMatrix();
 }

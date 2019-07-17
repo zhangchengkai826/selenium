@@ -6,6 +6,7 @@ public:
 	Timer();
 
 	float TotalTime()const; // in seconds
+	float DeltaTime()const; // in seconds
 
 	void Reset(); 
 	void Start(); // Call when unpaused.
