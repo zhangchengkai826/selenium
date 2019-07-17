@@ -21,6 +21,8 @@ public:
 		UINT cbvSrvUavDescriptorSize,
 		UINT rtvDescriptorSize);
 
+	void SetPSOs(ID3D12PipelineState* ssaoPso, ID3D12PipelineState* ssaoBlurPso);
+
 private:
 	void BuildResources();
 	void BuildOffsetVectors();
@@ -68,4 +70,7 @@ private:
 	CD3DX12_CPU_DESCRIPTOR_HANDLE mhAmbientMap1CpuSrv;
 	CD3DX12_GPU_DESCRIPTOR_HANDLE mhAmbientMap1GpuSrv;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE mhAmbientMap1CpuRtv;
+
+	ID3D12PipelineState* mPso = nullptr;
+	ID3D12PipelineState* mBlurPso = nullptr;
 };

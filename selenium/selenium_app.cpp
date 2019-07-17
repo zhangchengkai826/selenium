@@ -53,6 +53,16 @@ bool SeleniumApp::Initialize()
 	BuildFrameResources();
 	BuildPSOs();
 
+	mSsao->SetPSOs(mPSOs["ssao"].Get(), mPSOs["ssaoBlur"].Get());
+	
+	// Execute the initialization commands.
+	ThrowIfFailed(mCmdList->Close());
+	ID3D12CommandList* cmdsLists[] = { mCmdList.Get() };
+	mCmdQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+
+	// Wait until initialization is complete.
+	FlushCommandQueue();
+
 	return true;
 }
 

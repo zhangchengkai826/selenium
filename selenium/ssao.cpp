@@ -269,3 +269,9 @@ void Ssao::BuildDescriptors(ID3D12Resource* depthStencilBuffer)
 	md3dDevice->CreateRenderTargetView(mAmbientMap0.Get(), &rtvDesc, mhAmbientMap0CpuRtv);
 	md3dDevice->CreateRenderTargetView(mAmbientMap1.Get(), &rtvDesc, mhAmbientMap1CpuRtv);
 }
+
+void Ssao::SetPSOs(ID3D12PipelineState* ssaoPso, ID3D12PipelineState* ssaoBlurPso)
+{
+	mPso = ssaoPso;
+	mBlurPso = ssaoBlurPso;
+}
