@@ -20,6 +20,7 @@ public:
 		CD3DX12_CPU_DESCRIPTOR_HANDLE hCpuRtv,
 		UINT cbvSrvUavDescriptorSize,
 		UINT rtvDescriptorSize);
+	void BuildDescriptors(ID3D12Resource* depthStencilBuffer);
 
 	void SetPSOs(ID3D12PipelineState* ssaoPso, ID3D12PipelineState* ssaoBlurPso);
 
@@ -27,8 +28,6 @@ private:
 	void BuildResources();
 	void BuildOffsetVectors();
 	void BuildRandomVectorTexture(ID3D12GraphicsCommandList* cmdList);
-
-	void BuildDescriptors(ID3D12Resource* depthStencilBuffer);
 
 public:
 	static const DXGI_FORMAT NormalMapFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;

@@ -454,3 +454,8 @@ int D3DApp::Run()
 
 	return (int)msg.wParam;
 }
+
+float D3DApp::AspectRatio()const
+{
+	return static_cast<float>(mClientWidth) / mClientHeight;
+}

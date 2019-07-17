@@ -29,6 +29,8 @@ public:
 	bool Initialize()override;
 
 private:
+	void OnResize()override;
+
 	void CreateRtvAndDsvDescriptorHeaps()override;
 
 	void LoadSkinnedModel();

@@ -16,6 +16,8 @@ public:
 	
 	int Run();
 
+	float AspectRatio()const;
+
 protected:
 	D3DApp(HINSTANCE hInstance);
 	D3DApp(const D3DApp &rhs) = delete;
@@ -25,6 +27,11 @@ protected:
 
 	virtual void CreateRtvAndDsvDescriptorHeaps();
 
+	// Convenience overrides for handling mouse input.
+	virtual void OnMouseDown(WPARAM btnState, int x, int y) { }
+	virtual void OnMouseUp(WPARAM btnState, int x, int y) { }
+	virtual void OnMouseMove(WPARAM btnState, int x, int y) { }
+
 	bool InitMainWindow();
 	bool InitDirect3D();
 
@@ -32,11 +39,6 @@ protected:
 	void CreateSwapChain();
 
 	void FlushCommandQueue();
-
-	// Convenience overrides for handling mouse input.
-	virtual void OnMouseDown(WPARAM btnState, int x, int y) { }
-	virtual void OnMouseUp(WPARAM btnState, int x, int y) { }
-	virtual void OnMouseMove(WPARAM btnState, int x, int y) { }
 
 protected:
 	static D3DApp *mApp;

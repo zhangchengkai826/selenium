@@ -1153,3 +1153,18 @@ void SeleniumApp::BuildPSOs()
 	};
 	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&skyPsoDesc, IID_PPV_ARGS(&mPSOs["sky"])));
 }
+
+void SeleniumApp::OnResize()
+{
+	D3DApp::OnResize();
+
+	mCamera.SetLens(0.25f*MathHelper::Pi, AspectRatio(), 1.0f, 1000.0f);
+
+	if (mSsao != nullptr)
+	{
+		mSsao->OnResize(mClientWidth, mClientHeight);
+
+		// Resources changed, so need to rebuild descriptors.
+		mSsao->BuildDescriptors(mDepthStencilBuffer.Get());
+	}
+}
