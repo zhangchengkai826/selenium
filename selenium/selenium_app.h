@@ -41,6 +41,7 @@ private:
 	void BuildMaterials();
 	void BuildRenderItems();
 	void BuildFrameResources();
+	void BuildPSOs();
 
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> GetStaticSamplers();
 
@@ -97,4 +98,6 @@ private:
 	UINT mNullTexSrvIndex2 = 0;
 
 	std::vector<std::unique_ptr<FrameResource>> mFrameResources;
+
+	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D12PipelineState>> mPSOs;
 };
