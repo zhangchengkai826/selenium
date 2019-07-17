@@ -47,17 +47,18 @@ bool SeleniumApp::Initialize()
 	BuildDescriptorHeaps();
 	BuildShadersAndInputLayout();
 	BuildShapeGeometry();
+	BuildMaterials();
 
 	return true;
 }
 
 void SeleniumApp::LoadSkinnedModel() {
-	std::vector<M3DLoader::SkinnedVertex> vertices;
+	std::vector<SkinnedVertex> vertices;
 	std::vector<std::uint16_t> indices;
 
 	M3DLoader m3dLoader;
 	m3dLoader.LoadM3d(mSkinnedModelFilename, vertices, indices,
-		mSkinnedSubsets, mSkinnedMats, mSkinnedData);
+		mSkinnedSubsets, mSkinnedMatInfo, mSkinnedData);
 
 	mSkinnedModel = std::make_unique<SkinnedModel>();
 	mSkinnedModel->SkinnedData = &mSkinnedData;
@@ -65,7 +66,7 @@ void SeleniumApp::LoadSkinnedModel() {
 	mSkinnedModel->ClipName = "Take1";
 	mSkinnedModel->TimePos = 0.0f;
 
-	const UINT vbByteSize = (UINT)vertices.size() * sizeof(M3DLoader::SkinnedVertex);
+	const UINT vbByteSize = (UINT)vertices.size() * sizeof(SkinnedVertex);
 	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
 
 	auto geo = std::make_unique<MeshGeometry>();
@@ -83,7 +84,7 @@ void SeleniumApp::LoadSkinnedModel() {
 	geo->IndexBufferGPU = D3DUtil::CreateDefaultBuffer(md3dDevice.Get(),
 		mCmdList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
 
-	geo->VertexStrideInBytes = sizeof(M3DLoader::SkinnedVertex);
+	geo->VertexStrideInBytes = sizeof(SkinnedVertex);
 	geo->VertexBufferSizeInBytes = vbByteSize;
 	geo->IndexFormat = DXGI_FORMAT_R16_UINT;
 	geo->IndexBufferSizeInBytes = ibByteSize;
@@ -127,10 +128,10 @@ void SeleniumApp::LoadTextures() {
 	};
 
 	// Add skinned model textures to list so we can reference by name later.
-	for (UINT i = 0; i < mSkinnedMats.size(); ++i)
+	for (UINT i = 0; i < mSkinnedMatInfo.size(); ++i)
 	{
-		std::string diffuseName = mSkinnedMats[i].DiffuseMapName;
-		std::string normalName = mSkinnedMats[i].NormalMapName;
+		std::string diffuseName = mSkinnedMatInfo[i].DiffuseMapName;
+		std::string normalName = mSkinnedMatInfo[i].NormalMapName;
 
 		std::wstring diffuseFilename = L"Textures/" + AnsiToWString(diffuseName);
 		std::wstring normalFilename = L"Textures/" + AnsiToWString(normalName);
@@ -139,11 +140,11 @@ void SeleniumApp::LoadTextures() {
 		diffuseName = diffuseName.substr(0, diffuseName.find_last_of("."));
 		normalName = normalName.substr(0, normalName.find_last_of("."));
 
-		mSkinnedTextureNames.push_back(diffuseName);
+		mSkinnedTexNames.push_back(diffuseName);
 		texNames.push_back(diffuseName);
 		texFilenames.push_back(diffuseFilename);
 
-		mSkinnedTextureNames.push_back(normalName);
+		mSkinnedTexNames.push_back(normalName);
 		texNames.push_back(normalName);
 		texFilenames.push_back(normalFilename);
 	}
@@ -403,9 +404,9 @@ void SeleniumApp::BuildDescriptorHeaps()
 
 	mSkinnedTexHeapIndexStart = (UINT)tex2DList.size();
 
-	for (UINT i = 0; i < (UINT)mSkinnedTextureNames.size(); ++i)
+	for (UINT i = 0; i < (UINT)mSkinnedTexNames.size(); ++i)
 	{
-		auto texResource = mTextures[mSkinnedTextureNames[i]]->Resource;
+		auto texResource = mTextures[mSkinnedTexNames[i]]->Resource;
 		assert(texResource != nullptr);
 		tex2DList.push_back(texResource);
 	}
@@ -620,7 +621,7 @@ void SeleniumApp::BuildShapeGeometry()
 		cylinder.Vertices.size() +
 		quad.Vertices.size();
 
-	std::vector<M3DLoader::Vertex> vertices(totalVertexCount);
+	std::vector<Vertex> vertices(totalVertexCount);
 
 	UINT k = 0;
 	for (size_t i = 0; i < box.Vertices.size(); ++i, ++k)
@@ -670,7 +671,7 @@ void SeleniumApp::BuildShapeGeometry()
 	indices.insert(indices.end(), std::begin(cylinder.GetIndices16()), std::end(cylinder.GetIndices16()));
 	indices.insert(indices.end(), std::begin(quad.GetIndices16()), std::end(quad.GetIndices16()));
 
-	const UINT vbByteSize = (UINT)vertices.size() * sizeof(M3DLoader::Vertex);
+	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
 	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
 
 	auto geo = std::make_unique<MeshGeometry>();
@@ -688,7 +689,7 @@ void SeleniumApp::BuildShapeGeometry()
 	geo->IndexBufferGPU = D3DUtil::CreateDefaultBuffer(md3dDevice.Get(),
 		mCmdList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
 
-	geo->VertexStrideInBytes = sizeof(M3DLoader::Vertex);
+	geo->VertexStrideInBytes = sizeof(Vertex);
 	geo->VertexBufferSizeInBytes = vbByteSize;
 	geo->IndexFormat = DXGI_FORMAT_R16_UINT;
 	geo->IndexBufferSizeInBytes = ibByteSize;
@@ -700,4 +701,64 @@ void SeleniumApp::BuildShapeGeometry()
 	geo->DrawArgs["quad"] = quadSubmesh;
 
 	mGeometries[geo->Name] = std::move(geo);
+}
+
+void SeleniumApp::BuildMaterials()
+{
+	auto bricks0 = std::make_unique<Material>();
+	bricks0->Name = "bricks0";
+	bricks0->cbIndex = 0;
+	bricks0->DiffuseHeapIndex = 0;
+	bricks0->NormalHeapIndex = 1;
+	bricks0->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	bricks0->FresnelR0 = XMFLOAT3(0.1f, 0.1f, 0.1f);
+	bricks0->Roughness = 0.3f;
+
+	auto tile0 = std::make_unique<Material>();
+	tile0->Name = "tile0";
+	tile0->cbIndex = 1;
+	tile0->DiffuseHeapIndex = 2;
+	tile0->NormalHeapIndex = 3;
+	tile0->DiffuseAlbedo = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
+	tile0->FresnelR0 = XMFLOAT3(0.2f, 0.2f, 0.2f);
+	tile0->Roughness = 0.1f;
+
+	auto mirror0 = std::make_unique<Material>();
+	mirror0->Name = "mirror0";
+	mirror0->cbIndex = 2;
+	mirror0->DiffuseHeapIndex = 4;
+	mirror0->NormalHeapIndex = 5;
+	mirror0->DiffuseAlbedo = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	mirror0->FresnelR0 = XMFLOAT3(0.98f, 0.97f, 0.95f);
+	mirror0->Roughness = 0.1f;
+
+	auto sky = std::make_unique<Material>();
+	sky->Name = "sky";
+	sky->cbIndex = 3;
+	sky->DiffuseHeapIndex = 6;
+	sky->NormalHeapIndex = 7;
+	sky->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	sky->FresnelR0 = XMFLOAT3(0.1f, 0.1f, 0.1f);
+	sky->Roughness = 1.0f;
+
+	mMaterials["bricks0"] = std::move(bricks0);
+	mMaterials["tile0"] = std::move(tile0);
+	mMaterials["mirror0"] = std::move(mirror0);
+	mMaterials["sky"] = std::move(sky);
+
+	UINT cbIndex = 4;
+	UINT heapIndex = mSkinnedTexHeapIndexStart;
+	for (UINT i = 0; i < mSkinnedMatInfo.size(); ++i)
+	{
+		auto mat = std::make_unique<Material>();
+		mat->Name = mSkinnedMatInfo[i].Name;
+		mat->cbIndex = cbIndex++;
+		mat->DiffuseHeapIndex = heapIndex++;
+		mat->NormalHeapIndex = heapIndex++;
+		mat->DiffuseAlbedo = mSkinnedMatInfo[i].DiffuseAlbedo;
+		mat->FresnelR0 = mSkinnedMatInfo[i].FresnelR0;
+		mat->Roughness = mSkinnedMatInfo[i].Roughness;
+
+		mMaterials[mat->Name] = std::move(mat);
+	}
 }

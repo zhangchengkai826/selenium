@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <DirectXMath.h>
 #include <vector>
-#include "m3d_loader.h"
+#include "vertex.h"
 
 class GeometryGenerator
 {
@@ -10,7 +10,6 @@ public:
 
 	using uint16 = std::uint16_t;
 	using uint32 = std::uint32_t;
-	using Vertex = M3DLoader::Vertex;
 
 	class MeshData
 	{

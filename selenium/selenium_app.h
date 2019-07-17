@@ -15,6 +15,7 @@
 #include "d3dx12.h"
 #include <wrl/client.h>
 #include <vector>
+#include "material.h"
 
 class SeleniumApp : public D3DApp {
 public:
@@ -34,6 +35,7 @@ private:
 	void BuildDescriptorHeaps();
 	void BuildShadersAndInputLayout();
 	void BuildShapeGeometry();
+	void BuildMaterials();
 
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> GetStaticSamplers();
 
@@ -53,8 +55,8 @@ private:
 
 	std::string mSkinnedModelFilename = "Models\\soldier.m3d";
 	std::vector<M3DLoader::Subset> mSkinnedSubsets;
-	std::vector<M3DLoader::M3dMaterial> mSkinnedMats;
-	std::vector<std::string> mSkinnedTextureNames;
+	std::vector<M3DLoader::MaterialInfo> mSkinnedMatInfo;
+	std::vector<std::string> mSkinnedTexNames;
 	UINT mSkinnedTexHeapIndexStart = 0;
 	SkinnedData mSkinnedData;
 	std::unique_ptr<SkinnedModel> mSkinnedModel;
@@ -62,6 +64,7 @@ private:
 	std::unordered_map<std::string, std::unique_ptr<MeshGeometry>> mGeometries;
 	std::unordered_map<std::string, std::unique_ptr<Texture>> mTextures;
 	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3DBlob>> mShaders;
+	std::unordered_map<std::string, std::unique_ptr<Material>> mMaterials;
 
 	std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
 	std::vector<D3D12_INPUT_ELEMENT_DESC> mSkinnedInputLayout;

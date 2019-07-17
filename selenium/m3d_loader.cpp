@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <DirectXMath.h>
+#include "Vertex.h"
 
 using namespace DirectX;
 
@@ -9,7 +10,7 @@ bool M3DLoader::LoadM3d(const std::string &filename,
 	std::vector<SkinnedVertex> &vertices,
 	std::vector<USHORT> &indices,
 	std::vector<Subset> &subsets,
-	std::vector<M3dMaterial> &mats,
+	std::vector<MaterialInfo> &mats,
 	SkinnedData &skinnedData) {
 	
 	std::ifstream fin(filename);
@@ -50,7 +51,7 @@ bool M3DLoader::LoadM3d(const std::string &filename,
 	return false;
 }
 
-void M3DLoader::ReadMaterials(std::ifstream &fin, UINT numMaterials, std::vector<M3dMaterial> &mats) {
+void M3DLoader::ReadMaterials(std::ifstream &fin, UINT numMaterials, std::vector<MaterialInfo> &mats) {
 	std::string ignore;
 	mats.resize(numMaterials);
 

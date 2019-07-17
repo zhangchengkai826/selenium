@@ -161,6 +161,7 @@
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="geometry_generator.h" />
     <ClInclude Include="m3d_loader.h" />
+    <ClInclude Include="material.h" />
     <ClInclude Include="math_helper.h" />
     <ClInclude Include="mesh_geometry.h" />
     <ClInclude Include="model.h" />
@@ -170,6 +171,7 @@
     <ClInclude Include="ssao.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="timer.h" />
+    <ClInclude Include="vertex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
