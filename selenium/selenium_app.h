@@ -14,6 +14,7 @@
 #include <array>
 #include "d3dx12.h"
 #include <wrl/client.h>
+#include <vector>
 
 class SeleniumApp : public D3DApp {
 public:
@@ -31,6 +32,7 @@ private:
 	void BuildRootSignature();
 	void BuildSsaoRootSignature();
 	void BuildDescriptorHeaps();
+	void BuildShadersAndInputLayout();
 	
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> GetStaticSamplers();
 
@@ -58,6 +60,10 @@ private:
 
 	std::unordered_map<std::string, std::unique_ptr<MeshGeometry>> mGeometries;
 	std::unordered_map<std::string, std::unique_ptr<Texture>> mTextures;
+	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3DBlob>> mShaders;
+
+	std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
+	std::vector<D3D12_INPUT_ELEMENT_DESC> mSkinnedInputLayout;
 
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> mRootSignature = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> mSsaoRootSignature = nullptr;
