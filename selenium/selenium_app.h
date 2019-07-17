@@ -109,6 +109,8 @@ private:
 	UINT mNullTexSrvIndex2 = 0;
 
 	std::vector<std::unique_ptr<FrameResource>> mFrameResources;
+	FrameResource* mCurrFrameResource = nullptr;
+	int mCurrFrameResourceIndex = 0;
 
 	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D12PipelineState>> mPSOs;
 

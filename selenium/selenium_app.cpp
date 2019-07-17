@@ -1202,19 +1202,19 @@ void SeleniumApp::Update(const Timer& gt)
 {
 	OnKeyboardInput(gt);
 
-	//// Cycle through the circular frame resource array.
-	//mCurrFrameResourceIndex = (mCurrFrameResourceIndex + 1) % gNumFrameResources;
-	//mCurrFrameResource = mFrameResources[mCurrFrameResourceIndex].get();
+	// Cycle through the circular frame resource array.
+	mCurrFrameResourceIndex = (mCurrFrameResourceIndex + 1) % NumFrameResources;
+	mCurrFrameResource = mFrameResources[mCurrFrameResourceIndex].get();
 
-	//// Has the GPU finished processing the commands of the current frame resource?
-	//// If not, wait until the GPU has completed commands up to this fence point.
-	//if (mCurrFrameResource->Fence != 0 && mFence->GetCompletedValue() < mCurrFrameResource->Fence)
-	//{
-	//	HANDLE eventHandle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
-	//	ThrowIfFailed(mFence->SetEventOnCompletion(mCurrFrameResource->Fence, eventHandle));
-	//	WaitForSingleObject(eventHandle, INFINITE);
-	//	CloseHandle(eventHandle);
-	//}
+	// Has the GPU finished processing the commands of the current frame resource?
+	// If not, wait until the GPU has completed commands up to this fence point.
+	if (mCurrFrameResource->Fence != 0 && mFence->GetCompletedValue() < mCurrFrameResource->Fence)
+	{
+		HANDLE eventHandle = CreateEventEx(NULL, NULL, NULL, EVENT_ALL_ACCESS);
+		ThrowIfFailed(mFence->SetEventOnCompletion(mCurrFrameResource->Fence, eventHandle));
+		WaitForSingleObject(eventHandle, INFINITE);
+		CloseHandle(eventHandle);
+	}
 
 	////
 	//// Animate the lights (and hence shadows).
@@ -1361,13 +1361,14 @@ void SeleniumApp::Draw(const Timer& gt)
 	//ThrowIfFailed(mSwapChain->Present(0, 0));
 	//mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
 
-	//// Advance the fence value to mark commands up to this fence point.
-	//mCurrFrameResource->Fence = ++mCurrentFence;
+	// Advance the fence value to mark commands up to this fence point.
+	mCurrentFence++;
+	mCurrFrameResource->Fence = mCurrentFence;
 
-	//// Add an instruction to the command queue to set a new fence point. 
-	//// Because we are on the GPU timeline, the new fence point won't be 
-	//// set until the GPU finishes processing all the commands prior to this Signal().
-	//mCommandQueue->Signal(mFence.Get(), mCurrentFence);
+	// Add an instruction to the command queue to set a new fence point. 
+	// Because we are on the GPU timeline, the new fence point won't be 
+	// set until the GPU finishes processing all the commands prior to this Signal().
+	mCmdQueue->Signal(mFence.Get(), mCurrentFence);
 }
 
 void SeleniumApp::OnKeyboardInput(const Timer& gt)
