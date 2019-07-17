@@ -24,12 +24,20 @@ public:
 	bool Initialize()override;
 
 private:
+	void CreateRtvAndDsvDescriptorHeaps()override;
+
 	void LoadSkinnedModel();
 	void LoadTextures();
 	void BuildRootSignature();
 	void BuildSsaoRootSignature();
+	void BuildDescriptorHeaps();
 	
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> GetStaticSamplers();
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE GetCbvSrvUavCpuDescriptorHandle(int indexInHeap)const;
+	CD3DX12_GPU_DESCRIPTOR_HANDLE GetCbvSrvUavGpuDescriptorHandle(int indexInHeap)const;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE GetDsvCpuDescriptorHandle(int indexInHeap)const;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE GetRtvCpuDescriptorHandle(int indexInHeap)const;
 
 private:
 	DirectX::BoundingSphere mSceneBounds;
@@ -44,6 +52,7 @@ private:
 	std::vector<M3DLoader::Subset> mSkinnedSubsets;
 	std::vector<M3DLoader::M3dMaterial> mSkinnedMats;
 	std::vector<std::string> mSkinnedTextureNames;
+	UINT mSkinnedTexHeapIndexStart = 0;
 	SkinnedData mSkinnedData;
 	std::unique_ptr<SkinnedModel> mSkinnedModel;
 
@@ -52,4 +61,15 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> mRootSignature = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> mSsaoRootSignature = nullptr;
+
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mCbvSrvUavHeap;
+
+	UINT mSkyTexHeapIndex = 0;
+	UINT mShadowMapHeapIndex = 0;
+	UINT mSsaoHeapIndexStart = 0;
+
+	CD3DX12_GPU_DESCRIPTOR_HANDLE mNullCubeSrvGpuHandle;
+	UINT mNullCubeSrvIndex = 0;
+	UINT mNullTexSrvIndex1 = 0;
+	UINT mNullTexSrvIndex2 = 0;
 };

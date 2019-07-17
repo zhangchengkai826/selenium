@@ -349,3 +349,146 @@ void SeleniumApp::BuildSsaoRootSignature()
 		serializedRootSig->GetBufferSize(),
 		IID_PPV_ARGS(&mSsaoRootSignature)));
 }
+
+void SeleniumApp::CreateRtvAndDsvDescriptorHeaps()
+{
+	// Add +1 for screen normal map, +2 for ambient maps.
+	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc;
+	rtvHeapDesc.NumDescriptors = SwapChainBufferCount + 3;
+	rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+	rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	rtvHeapDesc.NodeMask = 0;
+	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(
+		&rtvHeapDesc, IID_PPV_ARGS(&mRtvHeap)));
+
+	// Add +1 DSV for shadow map.
+	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc;
+	dsvHeapDesc.NumDescriptors = 2;
+	dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+	dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	dsvHeapDesc.NodeMask = 0;
+	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(
+		&dsvHeapDesc, IID_PPV_ARGS(&mDsvHeap)));
+}
+
+void SeleniumApp::BuildDescriptorHeaps()
+{
+	//
+	// Create the CBV/SRV/UAV heap.
+	//
+	D3D12_DESCRIPTOR_HEAP_DESC cbvSrvUavHeapDesc = {};
+	cbvSrvUavHeapDesc.NumDescriptors = 64;
+	cbvSrvUavHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	cbvSrvUavHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&cbvSrvUavHeapDesc, IID_PPV_ARGS(&mCbvSrvUavHeap)));
+
+	//
+	// Fill out the heap with actual descriptors.
+	//
+	CD3DX12_CPU_DESCRIPTOR_HANDLE handle(mCbvSrvUavHeap->GetCPUDescriptorHandleForHeapStart());
+
+	std::vector<ComPtr<ID3D12Resource>> tex2DList =
+	{
+		mTextures["bricksDiffuseMap"]->Resource,
+		mTextures["bricksNormalMap"]->Resource,
+		mTextures["tileDiffuseMap"]->Resource,
+		mTextures["tileNormalMap"]->Resource,
+		mTextures["defaultDiffuseMap"]->Resource,
+		mTextures["defaultNormalMap"]->Resource
+	};
+
+	mSkinnedTexHeapIndexStart = (UINT)tex2DList.size();
+
+	for (UINT i = 0; i < (UINT)mSkinnedTextureNames.size(); ++i)
+	{
+		auto texResource = mTextures[mSkinnedTextureNames[i]]->Resource;
+		assert(texResource != nullptr);
+		tex2DList.push_back(texResource);
+	}
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+
+	for (UINT i = 0; i < (UINT)tex2DList.size(); ++i)
+	{
+		srvDesc.Format = tex2DList[i]->GetDesc().Format;
+		srvDesc.Texture2D.MipLevels = tex2DList[i]->GetDesc().MipLevels;
+		md3dDevice->CreateShaderResourceView(tex2DList[i].Get(), &srvDesc, handle);
+
+		// next descriptor
+		handle.Offset(1, mCbvSrvUavDescriptorSize);
+	}
+
+	auto skyTex = mTextures["skyCubeMap"]->Resource;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
+	srvDesc.TextureCube.MostDetailedMip = 0;
+	srvDesc.TextureCube.MipLevels = skyTex->GetDesc().MipLevels;
+	srvDesc.TextureCube.ResourceMinLODClamp = 0.0f;
+	srvDesc.Format = skyTex->GetDesc().Format;
+	md3dDevice->CreateShaderResourceView(skyTex.Get(), &srvDesc, handle);
+
+	mSkyTexHeapIndex = (UINT)tex2DList.size();
+	mShadowMapHeapIndex = mSkyTexHeapIndex + 1;
+	mSsaoHeapIndexStart = mShadowMapHeapIndex + 1;
+	mNullCubeSrvIndex = mSsaoHeapIndexStart + 5;
+	mNullTexSrvIndex1 = mNullCubeSrvIndex + 1;
+	mNullTexSrvIndex2 = mNullTexSrvIndex1 + 1;
+
+	auto nullCubeSrvCpuHandle = GetCbvSrvUavCpuDescriptorHandle(mNullCubeSrvIndex);
+	md3dDevice->CreateShaderResourceView(nullptr, &srvDesc, nullCubeSrvCpuHandle);
+	nullCubeSrvCpuHandle.Offset(1, mCbvSrvUavDescriptorSize);
+	mNullCubeSrvGpuHandle = GetCbvSrvUavGpuDescriptorHandle(mNullCubeSrvIndex);
+
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = 1;
+	srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+	md3dDevice->CreateShaderResourceView(nullptr, &srvDesc, nullCubeSrvCpuHandle);
+	nullCubeSrvCpuHandle.Offset(1, mCbvSrvUavDescriptorSize);
+	md3dDevice->CreateShaderResourceView(nullptr, &srvDesc, nullCubeSrvCpuHandle);
+
+	mShadowMap->BuildDescriptors(
+		GetCbvSrvUavCpuDescriptorHandle(mShadowMapHeapIndex),
+		GetCbvSrvUavGpuDescriptorHandle(mShadowMapHeapIndex),
+		GetDsvCpuDescriptorHandle(1));
+
+	mSsao->BuildDescriptors(
+		mDepthStencilBuffer.Get(),
+		GetCbvSrvUavCpuDescriptorHandle(mSsaoHeapIndexStart),
+		GetCbvSrvUavGpuDescriptorHandle(mSsaoHeapIndexStart),
+		GetRtvCpuDescriptorHandle(SwapChainBufferCount),
+		mCbvSrvUavDescriptorSize,
+		mRtvDescriptorSize);
+}
+
+CD3DX12_CPU_DESCRIPTOR_HANDLE SeleniumApp::GetCbvSrvUavCpuDescriptorHandle(int indexInHeap)const
+{
+	auto handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(mCbvSrvUavHeap->GetCPUDescriptorHandleForHeapStart());
+	handle.Offset(indexInHeap, mCbvSrvUavDescriptorSize);
+	return handle;
+}
+
+CD3DX12_GPU_DESCRIPTOR_HANDLE SeleniumApp::GetCbvSrvUavGpuDescriptorHandle(int indexInHeap)const
+{
+	auto handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvSrvUavHeap->GetGPUDescriptorHandleForHeapStart());
+	handle.Offset(indexInHeap, mCbvSrvUavDescriptorSize);
+	return handle;
+}
+
+CD3DX12_CPU_DESCRIPTOR_HANDLE SeleniumApp::GetDsvCpuDescriptorHandle(int indexInHeap)const
+{
+	auto handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(mDsvHeap->GetCPUDescriptorHandleForHeapStart());
+	handle.Offset(indexInHeap, mDsvDescriptorSize);
+	return handle;
+}
+
+CD3DX12_CPU_DESCRIPTOR_HANDLE SeleniumApp::GetRtvCpuDescriptorHandle(int indexInHeap)const
+{
+	auto handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(mRtvHeap->GetCPUDescriptorHandleForHeapStart());
+	handle.Offset(indexInHeap, mRtvDescriptorSize);
+	return handle;
+}
