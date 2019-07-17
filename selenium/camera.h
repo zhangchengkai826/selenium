@@ -10,9 +10,16 @@ public:
 	// Set frustum.
 	void SetLens(float fovY, float aspect, float zn, float zf);
 
+	// Rotate the camera.
+	void Pitch(float angle);
+	void RotateY(float angle);
+
 private:
 	// Camera coordinate system with coordinates relative to world space.
 	DirectX::XMFLOAT3 mPosition = { 0.0f, 0.0f, 0.0f };
+	DirectX::XMFLOAT3 mRight = { 1.0f, 0.0f, 0.0f };
+	DirectX::XMFLOAT3 mUp = { 0.0f, 1.0f, 0.0f };
+	DirectX::XMFLOAT3 mLook = { 0.0f, 0.0f, 1.0f };
 
 	// Cache frustum properties.
 	float mFovY = 0.0f;

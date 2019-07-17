@@ -26,3 +26,28 @@ void Camera::SetPosition(float x, float y, float z)
 	mPosition = XMFLOAT3(x, y, z);
 	mViewDirty = true;
 }
+
+void Camera::Pitch(float angle)
+{
+	// Rotate up and look vector about the right vector.
+
+	XMMATRIX R = XMMatrixRotationAxis(XMLoadFloat3(&mRight), angle);
+
+	XMStoreFloat3(&mUp, XMVector3TransformNormal(XMLoadFloat3(&mUp), R));
+	XMStoreFloat3(&mLook, XMVector3TransformNormal(XMLoadFloat3(&mLook), R));
+
+	mViewDirty = true;
+}
+
+void Camera::RotateY(float angle)
+{
+	// Rotate the basis vectors about the world y-axis.
+
+	XMMATRIX R = XMMatrixRotationY(angle);
+
+	XMStoreFloat3(&mRight, XMVector3TransformNormal(XMLoadFloat3(&mRight), R));
+	XMStoreFloat3(&mUp, XMVector3TransformNormal(XMLoadFloat3(&mUp), R));
+	XMStoreFloat3(&mLook, XMVector3TransformNormal(XMLoadFloat3(&mLook), R));
+
+	mViewDirty = true;
+}

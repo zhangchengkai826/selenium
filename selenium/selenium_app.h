@@ -33,6 +33,10 @@ private:
 
 	void CreateRtvAndDsvDescriptorHeaps()override;
 
+	void OnMouseDown(WPARAM btnState, int x, int y)override;
+	void OnMouseUp(WPARAM btnState, int x, int y)override;
+	void OnMouseMove(WPARAM btnState, int x, int y)override;
+
 	void LoadSkinnedModel();
 	void LoadTextures();
 	void BuildRootSignature();
@@ -102,4 +106,6 @@ private:
 	std::vector<std::unique_ptr<FrameResource>> mFrameResources;
 
 	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D12PipelineState>> mPSOs;
+
+	POINT mLastMousePos;
 };
