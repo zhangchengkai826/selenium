@@ -29,6 +29,9 @@ public:
 	bool Initialize()override;
 
 private:
+	void Update(const Timer& gt)override;
+	void Draw(const Timer& gt)override;
+
 	void OnResize()override;
 
 	void CreateRtvAndDsvDescriptorHeaps()override;

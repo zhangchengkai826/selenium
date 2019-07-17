@@ -22,6 +22,9 @@ protected:
 	D3DApp(HINSTANCE hInstance);
 	D3DApp(const D3DApp &rhs) = delete;
 	D3DApp &operator=(const D3DApp& rhs) = delete;
+	
+	virtual void Update(const Timer& gt) = 0;
+	virtual void Draw(const Timer& gt) = 0;
 
 	virtual void OnResize();
 
