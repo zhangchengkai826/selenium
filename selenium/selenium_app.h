@@ -33,7 +33,8 @@ private:
 	void BuildSsaoRootSignature();
 	void BuildDescriptorHeaps();
 	void BuildShadersAndInputLayout();
-	
+	void BuildShapeGeometry();
+
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> GetStaticSamplers();
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE GetCbvSrvUavCpuDescriptorHandle(int indexInHeap)const;

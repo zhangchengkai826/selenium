@@ -144,6 +144,7 @@
     <ClCompile Include="d3d_app.cpp" />
     <ClCompile Include="d3d_util.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
+    <ClCompile Include="geometry_generator.cpp" />
     <ClCompile Include="m3d_loader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math_helper.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="d3d_app.h" />
     <ClInclude Include="d3d_util.h" />
     <ClInclude Include="DDSTextureLoader.h" />
+    <ClInclude Include="geometry_generator.h" />
     <ClInclude Include="m3d_loader.h" />
     <ClInclude Include="math_helper.h" />
     <ClInclude Include="mesh_geometry.h" />
