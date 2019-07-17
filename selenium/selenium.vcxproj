@@ -164,7 +164,9 @@
     <ClInclude Include="material.h" />
     <ClInclude Include="math_helper.h" />
     <ClInclude Include="mesh_geometry.h" />
-    <ClInclude Include="model.h" />
+    <ClInclude Include="render_layer.h" />
+    <ClInclude Include="skinned_mesh_controller.h" />
+    <ClInclude Include="render_item.h" />
     <ClInclude Include="selenium_app.h" />
     <ClInclude Include="shadow_map.h" />
     <ClInclude Include="skinned_data.h" />

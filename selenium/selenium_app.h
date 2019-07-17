@@ -8,7 +8,7 @@
 #include <string>
 #include "m3d_loader.h"
 #include "skinned_data.h"
-#include "model.h"
+#include "skinned_mesh_controller.h"
 #include "mesh_geometry.h"
 #include "texture.h"
 #include <array>
@@ -16,6 +16,8 @@
 #include <wrl/client.h>
 #include <vector>
 #include "material.h"
+#include "render_item.h"
+#include "render_layer.h"
 
 class SeleniumApp : public D3DApp {
 public:
@@ -36,6 +38,7 @@ private:
 	void BuildShadersAndInputLayout();
 	void BuildShapeGeometry();
 	void BuildMaterials();
+	void BuildRenderItems();
 
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> GetStaticSamplers();
 
@@ -59,12 +62,18 @@ private:
 	std::vector<std::string> mSkinnedTexNames;
 	UINT mSkinnedTexHeapIndexStart = 0;
 	SkinnedData mSkinnedData;
-	std::unique_ptr<SkinnedModel> mSkinnedModel;
+	std::unique_ptr<SkinnedMeshController> mSkinnedMeshController;
 
 	std::unordered_map<std::string, std::unique_ptr<MeshGeometry>> mGeometries;
 	std::unordered_map<std::string, std::unique_ptr<Texture>> mTextures;
 	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3DBlob>> mShaders;
 	std::unordered_map<std::string, std::unique_ptr<Material>> mMaterials;
+	
+	// List of all the render items.
+	std::vector<std::unique_ptr<RenderItem>> mAllRitems;
+
+	// Render items divided by PSO.
+	std::vector<RenderItem *> mRitemLayer[(int)RenderLayer::Count];
 
 	std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
 	std::vector<D3D12_INPUT_ELEMENT_DESC> mSkinnedInputLayout;

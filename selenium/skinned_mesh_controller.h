@@ -2,7 +2,7 @@
 #include "skinned_data.h"
 #include <DirectXMath.h>
 
-struct SkinnedModel
+struct SkinnedMeshController
 {
 	SkinnedData* SkinnedData = nullptr;
 	std::vector<DirectX::XMFLOAT4X4> FinalTransforms;
