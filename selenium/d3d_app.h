@@ -13,6 +13,8 @@ public:
 
 	virtual LRESULT MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	virtual bool Initialize();
+	
+	int Run();
 
 protected:
 	D3DApp(HINSTANCE hInstance);
