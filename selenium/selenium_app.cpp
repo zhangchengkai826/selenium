@@ -50,6 +50,7 @@ bool SeleniumApp::Initialize()
 	BuildShapeGeometry();
 	BuildMaterials();
 	BuildRenderItems();
+	BuildFrameResources();
 
 	return true;
 }
@@ -715,6 +716,7 @@ void SeleniumApp::BuildMaterials()
 	bricks0->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	bricks0->FresnelR0 = XMFLOAT3(0.1f, 0.1f, 0.1f);
 	bricks0->Roughness = 0.3f;
+	bricks0->NumFramesDirty = NumFrameResources;
 
 	auto tile0 = std::make_unique<Material>();
 	tile0->Name = "tile0";
@@ -724,6 +726,7 @@ void SeleniumApp::BuildMaterials()
 	tile0->DiffuseAlbedo = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
 	tile0->FresnelR0 = XMFLOAT3(0.2f, 0.2f, 0.2f);
 	tile0->Roughness = 0.1f;
+	tile0->NumFramesDirty = NumFrameResources;
 
 	auto mirror0 = std::make_unique<Material>();
 	mirror0->Name = "mirror0";
@@ -733,6 +736,7 @@ void SeleniumApp::BuildMaterials()
 	mirror0->DiffuseAlbedo = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	mirror0->FresnelR0 = XMFLOAT3(0.98f, 0.97f, 0.95f);
 	mirror0->Roughness = 0.1f;
+	mirror0->NumFramesDirty = NumFrameResources;
 
 	auto sky = std::make_unique<Material>();
 	sky->Name = "sky";
@@ -742,6 +746,7 @@ void SeleniumApp::BuildMaterials()
 	sky->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	sky->FresnelR0 = XMFLOAT3(0.1f, 0.1f, 0.1f);
 	sky->Roughness = 1.0f;
+	sky->NumFramesDirty = NumFrameResources;
 
 	mMaterials["bricks0"] = std::move(bricks0);
 	mMaterials["tile0"] = std::move(tile0);
@@ -760,6 +765,7 @@ void SeleniumApp::BuildMaterials()
 		mat->DiffuseAlbedo = mSkinnedMatInfo[i].DiffuseAlbedo;
 		mat->FresnelR0 = mSkinnedMatInfo[i].FresnelR0;
 		mat->Roughness = mSkinnedMatInfo[i].Roughness;
+		mat->NumFramesDirty = NumFrameResources;
 
 		mMaterials[mat->Name] = std::move(mat);
 	}
@@ -776,6 +782,7 @@ void SeleniumApp::BuildRenderItems()
 	skyRitem->IndexCount = skyRitem->Geo->DrawArgs["sphere"].IndexCount;
 	skyRitem->StartIndexLocation = skyRitem->Geo->DrawArgs["sphere"].StartIndexLocation;
 	skyRitem->BaseVertexLocation = skyRitem->Geo->DrawArgs["sphere"].BaseVertexLocation;
+	skyRitem->NumFramesDirty = NumFrameResources;
 
 	mRitemLayer[(int)RenderLayer::Sky].push_back(skyRitem.get());
 	mAllRitems.push_back(std::move(skyRitem));
@@ -789,6 +796,7 @@ void SeleniumApp::BuildRenderItems()
 	quadRitem->IndexCount = quadRitem->Geo->DrawArgs["quad"].IndexCount;
 	quadRitem->StartIndexLocation = quadRitem->Geo->DrawArgs["quad"].StartIndexLocation;
 	quadRitem->BaseVertexLocation = quadRitem->Geo->DrawArgs["quad"].BaseVertexLocation;
+	quadRitem->NumFramesDirty = NumFrameResources;
 
 	mRitemLayer[(int)RenderLayer::Debug].push_back(quadRitem.get());
 	mAllRitems.push_back(std::move(quadRitem));
@@ -802,6 +810,7 @@ void SeleniumApp::BuildRenderItems()
 	boxRitem->IndexCount = boxRitem->Geo->DrawArgs["box"].IndexCount;
 	boxRitem->StartIndexLocation = boxRitem->Geo->DrawArgs["box"].StartIndexLocation;
 	boxRitem->BaseVertexLocation = boxRitem->Geo->DrawArgs["box"].BaseVertexLocation;
+	boxRitem->NumFramesDirty = NumFrameResources;
 
 	mRitemLayer[(int)RenderLayer::Opaque].push_back(boxRitem.get());
 	mAllRitems.push_back(std::move(boxRitem));
@@ -815,6 +824,7 @@ void SeleniumApp::BuildRenderItems()
 	gridRitem->IndexCount = gridRitem->Geo->DrawArgs["grid"].IndexCount;
 	gridRitem->StartIndexLocation = gridRitem->Geo->DrawArgs["grid"].StartIndexLocation;
 	gridRitem->BaseVertexLocation = gridRitem->Geo->DrawArgs["grid"].BaseVertexLocation;
+	gridRitem->NumFramesDirty = NumFrameResources;
 
 	mRitemLayer[(int)RenderLayer::Opaque].push_back(gridRitem.get());
 	mAllRitems.push_back(std::move(gridRitem));
@@ -842,6 +852,7 @@ void SeleniumApp::BuildRenderItems()
 		leftCylRitem->IndexCount = leftCylRitem->Geo->DrawArgs["cylinder"].IndexCount;
 		leftCylRitem->StartIndexLocation = leftCylRitem->Geo->DrawArgs["cylinder"].StartIndexLocation;
 		leftCylRitem->BaseVertexLocation = leftCylRitem->Geo->DrawArgs["cylinder"].BaseVertexLocation;
+		leftCylRitem->NumFramesDirty = NumFrameResources;
 
 		XMStoreFloat4x4(&rightCylRitem->World, rightCylWorld);
 		XMStoreFloat4x4(&rightCylRitem->TexTransform, brickTexTransform);
@@ -851,6 +862,7 @@ void SeleniumApp::BuildRenderItems()
 		rightCylRitem->IndexCount = rightCylRitem->Geo->DrawArgs["cylinder"].IndexCount;
 		rightCylRitem->StartIndexLocation = rightCylRitem->Geo->DrawArgs["cylinder"].StartIndexLocation;
 		rightCylRitem->BaseVertexLocation = rightCylRitem->Geo->DrawArgs["cylinder"].BaseVertexLocation;
+		rightCylRitem->NumFramesDirty = NumFrameResources;
 
 		XMStoreFloat4x4(&leftSphereRitem->World, leftSphereWorld);
 		leftSphereRitem->TexTransform = MathHelper::Identity4x4();
@@ -860,6 +872,7 @@ void SeleniumApp::BuildRenderItems()
 		leftSphereRitem->IndexCount = leftSphereRitem->Geo->DrawArgs["sphere"].IndexCount;
 		leftSphereRitem->StartIndexLocation = leftSphereRitem->Geo->DrawArgs["sphere"].StartIndexLocation;
 		leftSphereRitem->BaseVertexLocation = leftSphereRitem->Geo->DrawArgs["sphere"].BaseVertexLocation;
+		leftSphereRitem->NumFramesDirty = NumFrameResources;
 
 		XMStoreFloat4x4(&rightSphereRitem->World, rightSphereWorld);
 		rightSphereRitem->TexTransform = MathHelper::Identity4x4();
@@ -869,6 +882,7 @@ void SeleniumApp::BuildRenderItems()
 		rightSphereRitem->IndexCount = rightSphereRitem->Geo->DrawArgs["sphere"].IndexCount;
 		rightSphereRitem->StartIndexLocation = rightSphereRitem->Geo->DrawArgs["sphere"].StartIndexLocation;
 		rightSphereRitem->BaseVertexLocation = rightSphereRitem->Geo->DrawArgs["sphere"].BaseVertexLocation;
+		rightSphereRitem->NumFramesDirty = NumFrameResources;
 
 		mRitemLayer[(int)RenderLayer::Opaque].push_back(leftCylRitem.get());
 		mRitemLayer[(int)RenderLayer::Opaque].push_back(rightCylRitem.get());
@@ -900,6 +914,7 @@ void SeleniumApp::BuildRenderItems()
 		ritem->IndexCount = ritem->Geo->DrawArgs[submeshName].IndexCount;
 		ritem->StartIndexLocation = ritem->Geo->DrawArgs[submeshName].StartIndexLocation;
 		ritem->BaseVertexLocation = ritem->Geo->DrawArgs[submeshName].BaseVertexLocation;
+		ritem->NumFramesDirty = NumFrameResources;
 
 		// All render items for this solider.m3d skinned mesh share
 		// the same skinned mesh controller.
@@ -908,5 +923,16 @@ void SeleniumApp::BuildRenderItems()
 
 		mRitemLayer[(int)RenderLayer::SkinnedOpaque].push_back(ritem.get());
 		mAllRitems.push_back(std::move(ritem));
+	}
+}
+
+void SeleniumApp::BuildFrameResources()
+{
+	for (int i = 0; i < NumFrameResources; ++i)
+	{
+		mFrameResources.push_back(std::make_unique<FrameResource>(md3dDevice.Get(),
+			2, (UINT)mAllRitems.size(),
+			1,
+			(UINT)mMaterials.size()));
 	}
 }

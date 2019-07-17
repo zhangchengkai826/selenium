@@ -18,6 +18,7 @@
 #include "material.h"
 #include "render_item.h"
 #include "render_layer.h"
+#include "frame_resource.h"
 
 class SeleniumApp : public D3DApp {
 public:
@@ -39,6 +40,7 @@ private:
 	void BuildShapeGeometry();
 	void BuildMaterials();
 	void BuildRenderItems();
+	void BuildFrameResources();
 
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> GetStaticSamplers();
 
@@ -48,6 +50,8 @@ private:
 	CD3DX12_CPU_DESCRIPTOR_HANDLE GetRtvCpuDescriptorHandle(int indexInHeap)const;
 
 private:
+	static const int NumFrameResources = 3;
+
 	DirectX::BoundingSphere mSceneBounds;
 
 	Camera mCamera;
@@ -91,4 +95,6 @@ private:
 	UINT mNullCubeSrvIndex = 0;
 	UINT mNullTexSrvIndex1 = 0;
 	UINT mNullTexSrvIndex2 = 0;
+
+	std::vector<std::unique_ptr<FrameResource>> mFrameResources;
 };

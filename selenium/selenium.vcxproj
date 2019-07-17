@@ -144,6 +144,7 @@
     <ClCompile Include="d3d_app.cpp" />
     <ClCompile Include="d3d_util.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
+    <ClCompile Include="frame_resource.cpp" />
     <ClCompile Include="geometry_generator.cpp" />
     <ClCompile Include="m3d_loader.cpp" />
     <ClCompile Include="main.cpp" />
@@ -159,7 +160,9 @@
     <ClInclude Include="d3d_app.h" />
     <ClInclude Include="d3d_util.h" />
     <ClInclude Include="DDSTextureLoader.h" />
+    <ClInclude Include="frame_resource.h" />
     <ClInclude Include="geometry_generator.h" />
+    <ClInclude Include="light.h" />
     <ClInclude Include="m3d_loader.h" />
     <ClInclude Include="material.h" />
     <ClInclude Include="math_helper.h" />
@@ -173,6 +176,7 @@
     <ClInclude Include="ssao.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="timer.h" />
+    <ClInclude Include="upload_buffer.h" />
     <ClInclude Include="vertex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -22,8 +22,8 @@ struct RenderItem
 	// Dirty flag indicating the object data has changed and we need to update the constant buffer.
 	// Because we have an object cbuffer for each FrameResource, we have to apply the
 	// update to each FrameResource.  Thus, when we modify obect data we should set 
-	// NumFramesDirty = gNumFrameResources so that each frame resource gets the update.
-	//int NumFramesDirty = gNumFrameResources;
+	// NumFramesDirty = NumFrameResources so that each frame resource gets the update.
+	int NumFramesDirty = -1;
 
 	// Index into GPU constant buffer corresponding to the ObjectCB for this render item.
 	UINT ObjCBIndex = -1;

@@ -104,36 +104,36 @@ void Ssao::BuildOffsetVectors()
 	// if we choose to use less than 14 samples.
 
 	// 8 cube corners
-	mOffsets[0] = XMFLOAT4(+1.0f, +1.0f, +1.0f, 0.0f);
-	mOffsets[1] = XMFLOAT4(-1.0f, -1.0f, -1.0f, 0.0f);
+	mOffsetVectors[0] = XMFLOAT4(+1.0f, +1.0f, +1.0f, 0.0f);
+	mOffsetVectors[1] = XMFLOAT4(-1.0f, -1.0f, -1.0f, 0.0f);
 
-	mOffsets[2] = XMFLOAT4(-1.0f, +1.0f, +1.0f, 0.0f);
-	mOffsets[3] = XMFLOAT4(+1.0f, -1.0f, -1.0f, 0.0f);
+	mOffsetVectors[2] = XMFLOAT4(-1.0f, +1.0f, +1.0f, 0.0f);
+	mOffsetVectors[3] = XMFLOAT4(+1.0f, -1.0f, -1.0f, 0.0f);
 
-	mOffsets[4] = XMFLOAT4(+1.0f, +1.0f, -1.0f, 0.0f);
-	mOffsets[5] = XMFLOAT4(-1.0f, -1.0f, +1.0f, 0.0f);
+	mOffsetVectors[4] = XMFLOAT4(+1.0f, +1.0f, -1.0f, 0.0f);
+	mOffsetVectors[5] = XMFLOAT4(-1.0f, -1.0f, +1.0f, 0.0f);
 
-	mOffsets[6] = XMFLOAT4(-1.0f, +1.0f, -1.0f, 0.0f);
-	mOffsets[7] = XMFLOAT4(+1.0f, -1.0f, +1.0f, 0.0f);
+	mOffsetVectors[6] = XMFLOAT4(-1.0f, +1.0f, -1.0f, 0.0f);
+	mOffsetVectors[7] = XMFLOAT4(+1.0f, -1.0f, +1.0f, 0.0f);
 
 	// 6 centers of cube faces
-	mOffsets[8] = XMFLOAT4(-1.0f, 0.0f, 0.0f, 0.0f);
-	mOffsets[9] = XMFLOAT4(+1.0f, 0.0f, 0.0f, 0.0f);
+	mOffsetVectors[8] = XMFLOAT4(-1.0f, 0.0f, 0.0f, 0.0f);
+	mOffsetVectors[9] = XMFLOAT4(+1.0f, 0.0f, 0.0f, 0.0f);
 
-	mOffsets[10] = XMFLOAT4(0.0f, -1.0f, 0.0f, 0.0f);
-	mOffsets[11] = XMFLOAT4(0.0f, +1.0f, 0.0f, 0.0f);
+	mOffsetVectors[10] = XMFLOAT4(0.0f, -1.0f, 0.0f, 0.0f);
+	mOffsetVectors[11] = XMFLOAT4(0.0f, +1.0f, 0.0f, 0.0f);
 
-	mOffsets[12] = XMFLOAT4(0.0f, 0.0f, -1.0f, 0.0f);
-	mOffsets[13] = XMFLOAT4(0.0f, 0.0f, +1.0f, 0.0f);
+	mOffsetVectors[12] = XMFLOAT4(0.0f, 0.0f, -1.0f, 0.0f);
+	mOffsetVectors[13] = XMFLOAT4(0.0f, 0.0f, +1.0f, 0.0f);
 
 	for (int i = 0; i < 14; ++i)
 	{
 		// Create random lengths in [0.25, 1.0].
 		float s = MathHelper::RandF(0.25f, 1.0f);
 
-		XMVECTOR v = s * XMVector4Normalize(XMLoadFloat4(&mOffsets[i]));
+		XMVECTOR v = s * XMVector4Normalize(XMLoadFloat4(&mOffsetVectors[i]));
 
-		XMStoreFloat4(&mOffsets[i], v);
+		XMStoreFloat4(&mOffsetVectors[i], v);
 	}
 }
 

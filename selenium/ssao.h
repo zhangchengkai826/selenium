@@ -48,7 +48,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> mRandomVectorMap;
 	Microsoft::WRL::ComPtr<ID3D12Resource> mRandomVectorMapUploadBuffer;
 
-	DirectX::XMFLOAT4 mOffsets[14];
+	DirectX::XMFLOAT4 mOffsetVectors[14];
 	
 	CD3DX12_CPU_DESCRIPTOR_HANDLE mhNormalMapCpuSrv;
 	CD3DX12_GPU_DESCRIPTOR_HANDLE mhNormalMapGpuSrv;
