@@ -23,6 +23,9 @@ struct Keyframe
 // We assume an animation always has two keyframes.
 struct BoneAnimation
 {
+	float GetEndTime()const;
+	void Interpolate(float timePos, DirectX::XMFLOAT4X4& toParentTransform)const;
+
 	std::vector<Keyframe> Keyframes;
 };
 
@@ -31,6 +34,9 @@ struct BoneAnimation
 // the animation clip.    
 struct AnimationClip
 {
+	float GetClipEndTime()const;
+	void Interpolate(float timePos, std::vector<DirectX::XMFLOAT4X4>& toParentTransforms)const;
+
 	std::vector<BoneAnimation> BoneAnimations;
 };
 
@@ -42,6 +48,14 @@ public:
 		std::vector<int>& boneHierarchy,
 		std::vector<DirectX::XMFLOAT4X4>& boneOffsets,
 		std::unordered_map<std::string, AnimationClip>& animationClips);
+
+	float GetClipEndTime(const std::string& clipName)const;
+
+	// In a real project, you'd want to cache the result if there was a chance
+	// that you were calling this several times with the same clipName at 
+	// the same timePos.
+	void GetFinalTransforms(const std::string& clipName, float timePos,
+		std::vector<DirectX::XMFLOAT4X4>& finalTransforms)const;
 
 private:
 	// Gives parentIndex of ith bone.

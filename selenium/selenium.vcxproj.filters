@@ -110,9 +110,6 @@
     <ClInclude Include="render_item.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="skinned_mesh_controller.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="render_layer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -123,6 +120,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="skinned_controller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

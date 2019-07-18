@@ -3,7 +3,7 @@
 #include "math_helper.h"
 #include "material.h"
 #include "mesh_geometry.h"
-#include "skinned_mesh_controller.h"
+#include "skinned_controller.h"
 
 // Lightweight structure stores parameters to draw a shape.  This will
 // vary from app-to-app.
@@ -39,6 +39,6 @@ struct RenderItem
 	// Only applicable to skinned render-items.
 	UINT SkinnedCBIndex = -1;
 
-	// nullptr if this render-item is not animated by skinned mesh.
-	SkinnedMeshController* skinnedMeshController = nullptr;
+	// nullptr if this render-item is not animated by skinned controller.
+	SkinnedController* skinnedController = nullptr;
 };

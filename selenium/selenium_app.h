@@ -8,7 +8,7 @@
 #include <string>
 #include "m3d_loader.h"
 #include "skinned_data.h"
-#include "skinned_mesh_controller.h"
+#include "skinned_controller.h"
 #include "mesh_geometry.h"
 #include "texture.h"
 #include <array>
@@ -54,7 +54,9 @@ private:
 
 	void OnKeyboardInput(const Timer& gt);
 	void AnimateMaterials(const Timer& gt);
-	void UpdateObjectCBs(const Timer& gt);
+	void UpdateObjectCB(const Timer& gt);
+	void UpdateSkinnedCB(const Timer& gt);
+	void UpdateMaterialBuffer(const Timer& gt);
 
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> GetStaticSamplers();
 
@@ -80,7 +82,7 @@ private:
 	std::vector<std::string> mSkinnedTexNames;
 	UINT mSkinnedTexHeapIndexStart = 0;
 	SkinnedData mSkinnedData;
-	std::unique_ptr<SkinnedMeshController> mSkinnedMeshController;
+	std::unique_ptr<SkinnedController> mSkinnedController;
 
 	std::unordered_map<std::string, std::unique_ptr<MeshGeometry>> mGeometries;
 	std::unordered_map<std::string, std::unique_ptr<Texture>> mTextures;

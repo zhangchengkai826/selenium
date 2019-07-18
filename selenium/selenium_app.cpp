@@ -74,11 +74,11 @@ void SeleniumApp::LoadSkinnedModel() {
 	m3dLoader.LoadM3d(mSkinnedModelFilename, vertices, indices,
 		mSkinnedSubsets, mSkinnedMatInfo, mSkinnedData);
 
-	mSkinnedMeshController = std::make_unique<SkinnedMeshController>();
-	mSkinnedMeshController->SkinnedData = &mSkinnedData;
-	mSkinnedMeshController->FinalTransforms.resize(mSkinnedData.BoneCount());
-	mSkinnedMeshController->ClipName = "Take1";
-	mSkinnedMeshController->TimePos = 0.0f;
+	mSkinnedController = std::make_unique<SkinnedController>();
+	mSkinnedController->Data = &mSkinnedData;
+	mSkinnedController->FinalTransforms.resize(mSkinnedData.BoneCount());
+	mSkinnedController->ClipName = "Take1";
+	mSkinnedController->TimePos = 0.0f;
 
 	const UINT vbByteSize = (UINT)vertices.size() * sizeof(SkinnedVertex);
 	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
@@ -927,10 +927,8 @@ void SeleniumApp::BuildRenderItems()
 		ritem->BaseVertexLocation = ritem->Geo->DrawArgs[submeshName].BaseVertexLocation;
 		ritem->NumFramesDirty = NumFrameResources;
 
-		// All render items for this solider.m3d skinned mesh share
-		// the same skinned mesh controller.
 		ritem->SkinnedCBIndex = 0;
-		ritem->skinnedMeshController = mSkinnedMeshController.get();
+		ritem->skinnedController = mSkinnedController.get();
 
 		mRitemLayer[(int)RenderLayer::SkinnedOpaque].push_back(ritem.get());
 		mAllRitems.push_back(std::move(ritem));
@@ -1231,9 +1229,9 @@ void SeleniumApp::Update(const Timer& gt)
 	}
 
 	AnimateMaterials(gt);
-	UpdateObjectCBs(gt);
-	//UpdateSkinnedCBs(gt);
-	//UpdateMaterialBuffer(gt);
+	UpdateObjectCB(gt);
+	UpdateSkinnedCB(gt);
+	UpdateMaterialBuffer(gt);
 	//UpdateShadowTransform(gt);
 	//UpdateMainPassCB(gt);
 	//UpdateShadowPassCB(gt);
@@ -1395,7 +1393,7 @@ void SeleniumApp::AnimateMaterials(const Timer& gt)
 
 }
 
-void SeleniumApp::UpdateObjectCBs(const Timer& gt)
+void SeleniumApp::UpdateObjectCB(const Timer& gt)
 {
 	auto currObjectCB = mCurrFrameResource->ObjectCB.get();
 	for (auto& e : mAllRitems)
@@ -1419,3 +1417,48 @@ void SeleniumApp::UpdateObjectCBs(const Timer& gt)
 		}
 	}
 }
+
+void SeleniumApp::UpdateSkinnedCB(const Timer& gt)
+{
+	auto currSkinnedCB = mCurrFrameResource->SkinnedCB.get();
+
+	// We only have one skinned model being animated.
+	mSkinnedController->UpdateAnimation(gt.DeltaTime());
+
+	SkinnedConstants skinnedConstants;
+	std::copy(
+		std::begin(mSkinnedController->FinalTransforms),
+		std::end(mSkinnedController->FinalTransforms),
+		&skinnedConstants.BoneTransforms[0]);
+
+	currSkinnedCB->CopyData(0, skinnedConstants);
+}
+
+void SeleniumApp::UpdateMaterialBuffer(const Timer& gt)
+{
+	auto currMaterialBuffer = mCurrFrameResource->MaterialBuffer.get();
+	for (auto& e : mMaterials)
+	{
+		// Only update the buffer data if the data have changed.  If the buffer
+		// data changes, it needs to be updated for each FrameResource.
+		Material* mat = e.second.get();
+		if (mat->NumFramesDirty > 0)
+		{
+			XMMATRIX matTransform = XMLoadFloat4x4(&mat->MatTransform);
+
+			MaterialBufferData matData;
+			matData.DiffuseAlbedo = mat->DiffuseAlbedo;
+			matData.FresnelR0 = mat->FresnelR0;
+			matData.Roughness = mat->Roughness;
+			XMStoreFloat4x4(&matData.MatTransform, XMMatrixTranspose(matTransform));
+			matData.DiffuseMapIndex = mat->DiffuseHeapIndex;
+			matData.NormalMapIndex = mat->NormalHeapIndex;
+
+			currMaterialBuffer->CopyData(mat->bufferIndex, matData);
+
+			// Next FrameResource need to be updated too.
+			mat->NumFramesDirty--;
+		}
+	}
+}
+
