@@ -1232,7 +1232,7 @@ void SeleniumApp::Update(const Timer& gt)
 	UpdateObjectCB(gt);
 	UpdateSkinnedCB(gt);
 	UpdateMaterialBuffer(gt);
-	//UpdateShadowTransform(gt);
+	UpdateShadowTransform(gt);
 	//UpdateMainPassCB(gt);
 	//UpdateShadowPassCB(gt);
 	//UpdateSsaoCB(gt);
@@ -1462,3 +1462,42 @@ void SeleniumApp::UpdateMaterialBuffer(const Timer& gt)
 	}
 }
 
+void SeleniumApp::UpdateShadowTransform(const Timer& gt)
+{
+	// Only the first "main" light casts a shadow.
+	XMVECTOR lightDir = XMLoadFloat3(&mRotatedLightDirections[0]);
+	XMVECTOR targetPosW = XMLoadFloat3(&mSceneBounds.Center);  // world space
+	XMVECTOR lightPosW = -2.0f*mSceneBounds.Radius*lightDir + targetPosW; // world space
+	XMVECTOR lightUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	XMMATRIX lightView = XMMatrixLookAtLH(lightPosW, targetPosW, lightUp);
+
+	XMStoreFloat3(&mLightPosW, lightPosW);
+
+	// Transform bounding sphere to light space.
+	XMFLOAT3 sphereCenterLS;
+	XMStoreFloat3(&sphereCenterLS, XMVector3TransformCoord(targetPosW, lightView));
+
+	// Ortho frustum in light space encloses scene.
+	float l = sphereCenterLS.x - mSceneBounds.Radius;
+	float b = sphereCenterLS.y - mSceneBounds.Radius;
+	float n = sphereCenterLS.z - mSceneBounds.Radius;
+	float r = sphereCenterLS.x + mSceneBounds.Radius;
+	float t = sphereCenterLS.y + mSceneBounds.Radius;
+	float f = sphereCenterLS.z + mSceneBounds.Radius;
+
+	mLightNearZ = n;
+	mLightFarZ = f;
+	XMMATRIX lightProj = XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
+
+	// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
+	XMMATRIX T(
+		0.5f, 0.0f, 0.0f, 0.0f,
+		0.0f, -0.5f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.0f, 1.0f);
+
+	XMMATRIX S = lightView * lightProj * T;
+	XMStoreFloat4x4(&mLightView, lightView);
+	XMStoreFloat4x4(&mLightProj, lightProj);
+	XMStoreFloat4x4(&mShadowTransform, S);
+}
