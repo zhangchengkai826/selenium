@@ -1250,29 +1250,29 @@ void SeleniumApp::Draw(const Timer& gt)
 	// Reusing the command list reuses memory.
 	ThrowIfFailed(mCmdList->Reset(cmdAllocator.Get(), mPSOs["opaque"].Get()));
 
-	//ID3D12DescriptorHeap* descriptorHeaps[] = { mSrvDescriptorHeap.Get() };
-	//mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+	ID3D12DescriptorHeap* descriptorHeaps[] = { mCbvSrvUavHeap.Get() };
+	mCmdList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
-	//mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
+	mCmdList->SetGraphicsRootSignature(mRootSignature.Get());
 
-	////
-	//// Shadow map pass.
-	////
+	//
+	// Shadow map pass.
+	//
 
-	//// Bind all the materials used in this scene.  For structured buffers, we can bypass the heap and 
-	//// set as a root descriptor.
-	//auto matBuffer = mCurrFrameResource->MaterialBuffer->Resource();
-	//mCommandList->SetGraphicsRootShaderResourceView(3, matBuffer->GetGPUVirtualAddress());
+	// Bind all the materials used in this scene.  For structured buffers, we can bypass the heap and 
+	// set as a root descriptor.
+	auto matBuffer = mCurrFrameResource->MaterialBuffer->Resource();
+	mCmdList->SetGraphicsRootShaderResourceView(3, matBuffer->GetGPUVirtualAddress());
 
-	//// Bind null SRV for shadow map pass.
-	//mCommandList->SetGraphicsRootDescriptorTable(4, mNullSrv);
+	// Bind null SRV for shadow map pass.
+	mCmdList->SetGraphicsRootDescriptorTable(4, mNullCubeSrvGpuHandle);
 
-	//// Bind all the textures used in this scene.  Observe
-	//// that we only have to specify the first descriptor in the table.  
-	//// The root signature knows how many descriptors are expected in the table.
-	//mCommandList->SetGraphicsRootDescriptorTable(5, mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+	// Bind all the textures used in this scene.  Observe
+	// that we only have to specify the first descriptor in the table.  
+	// The root signature knows how many descriptors are expected in the table.
+	mCmdList->SetGraphicsRootDescriptorTable(5, mCbvSrvUavHeap->GetGPUDescriptorHandleForHeapStart());
 
-	//DrawSceneToShadowMap();
+	DrawSceneToShadowMap();
 
 	////
 	//// Normal/depth pass.
@@ -1367,6 +1367,74 @@ void SeleniumApp::Draw(const Timer& gt)
 	// Because we are on the GPU timeline, the new fence point won't be 
 	// set until the GPU finishes processing all the commands prior to this Signal().
 	mCmdQueue->Signal(mFence.Get(), mCurrentFence);
+}
+
+void SeleniumApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems)
+{
+	UINT objCBByteSize = D3DUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
+	UINT skinnedCBByteSize = D3DUtil::CalcConstantBufferByteSize(sizeof(SkinnedConstants));
+
+	auto objectCB = mCurrFrameResource->ObjectCB->Resource();
+	auto skinnedCB = mCurrFrameResource->SkinnedCB->Resource();
+
+	// For each render item...
+	for (size_t i = 0; i < ritems.size(); ++i)
+	{
+		auto ri = ritems[i];
+
+		cmdList->IASetVertexBuffers(0, 1, &ri->Geo->VertexBufferView());
+		cmdList->IASetIndexBuffer(&ri->Geo->IndexBufferView());
+		cmdList->IASetPrimitiveTopology(ri->PrimitiveTopology);
+
+		D3D12_GPU_VIRTUAL_ADDRESS objCBAddress = objectCB->GetGPUVirtualAddress() + ri->ObjCBIndex*objCBByteSize;
+
+		cmdList->SetGraphicsRootConstantBufferView(0, objCBAddress);
+
+		if (ri->skinnedController != nullptr)
+		{
+			D3D12_GPU_VIRTUAL_ADDRESS skinnedCBAddress = skinnedCB->GetGPUVirtualAddress() + ri->SkinnedCBIndex*skinnedCBByteSize;
+			cmdList->SetGraphicsRootConstantBufferView(1, skinnedCBAddress);
+		}
+		else
+		{
+			cmdList->SetGraphicsRootConstantBufferView(1, 0);
+		}
+
+		cmdList->DrawIndexedInstanced(ri->IndexCount, 1, ri->StartIndexLocation, ri->BaseVertexLocation, 0);
+	}
+}
+
+void SeleniumApp::DrawSceneToShadowMap()
+{
+	mCmdList->RSSetViewports(1, &mShadowMap->Viewport());
+	mCmdList->RSSetScissorRects(1, &mShadowMap->ScissorRect());
+
+	// Change to DEPTH_WRITE.
+	mCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mShadowMap->Resource(),
+		D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE));
+
+	// Clear the back buffer and depth buffer.
+	mCmdList->ClearDepthStencilView(mShadowMap->CpuDsv(),
+		D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+
+	// Specify the buffers we are going to render to.
+	mCmdList->OMSetRenderTargets(0, nullptr, false, &mShadowMap->CpuDsv());
+
+	// Bind the pass constant buffer for the shadow map pass.
+	UINT passCBByteSize = D3DUtil::CalcConstantBufferByteSize(sizeof(PassConstants));
+	auto passCB = mCurrFrameResource->PassCB->Resource();
+	D3D12_GPU_VIRTUAL_ADDRESS passCBAddress = passCB->GetGPUVirtualAddress() + 1 * passCBByteSize;
+	mCmdList->SetGraphicsRootConstantBufferView(2, passCBAddress);
+
+	mCmdList->SetPipelineState(mPSOs["shadow_opaque"].Get());
+	DrawRenderItems(mCmdList.Get(), mRitemLayer[(int)RenderLayer::Opaque]);
+
+	mCmdList->SetPipelineState(mPSOs["skinnedShadow_opaque"].Get());
+	DrawRenderItems(mCmdList.Get(), mRitemLayer[(int)RenderLayer::SkinnedOpaque]);
+
+	// Change back to GENERIC_READ so we can read the texture in a shader.
+	mCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mShadowMap->Resource(),
+		D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ));
 }
 
 void SeleniumApp::OnKeyboardInput(const Timer& gt)

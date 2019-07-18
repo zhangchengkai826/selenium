@@ -94,3 +94,27 @@ UINT ShadowMap::Height()const
 	return mHeight;
 }
 
+D3D12_VIEWPORT ShadowMap::Viewport()const
+{
+	return mViewport;
+}
+
+D3D12_RECT ShadowMap::ScissorRect()const
+{
+	return mScissorRect;
+}
+
+ID3D12Resource* ShadowMap::Resource()
+{
+	return mShadowMap.Get();
+}
+
+CD3DX12_GPU_DESCRIPTOR_HANDLE ShadowMap::GpuSrv()const
+{
+	return mhGpuSrv;
+}
+
+CD3DX12_CPU_DESCRIPTOR_HANDLE ShadowMap::CpuDsv()const
+{
+	return mhCpuDsv;
+}
