@@ -53,6 +53,8 @@ private:
 	void BuildPSOs();
 
 	void OnKeyboardInput(const Timer& gt);
+	void AnimateMaterials(const Timer& gt);
+	void UpdateObjectCBs(const Timer& gt);
 
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> GetStaticSamplers();
 
@@ -113,6 +115,14 @@ private:
 	int mCurrFrameResourceIndex = 0;
 
 	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D12PipelineState>> mPSOs;
+
+	float mLightRotationAngle = 0.0f;
+	DirectX::XMFLOAT3 mBaseLightDirections[3] = {
+		DirectX::XMFLOAT3(0.57735f, -0.57735f, 0.57735f),
+		DirectX::XMFLOAT3(-0.57735f, -0.57735f, 0.57735f),
+		DirectX::XMFLOAT3(0.0f, -0.707f, -0.707f)
+	};
+	DirectX::XMFLOAT3 mRotatedLightDirections[3];
 
 	POINT mLastMousePos;
 };

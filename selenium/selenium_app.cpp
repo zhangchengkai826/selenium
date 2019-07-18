@@ -721,7 +721,7 @@ void SeleniumApp::BuildMaterials()
 {
 	auto bricks0 = std::make_unique<Material>();
 	bricks0->Name = "bricks0";
-	bricks0->cbIndex = 0;
+	bricks0->bufferIndex = 0;
 	bricks0->DiffuseHeapIndex = 0;
 	bricks0->NormalHeapIndex = 1;
 	bricks0->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -731,7 +731,7 @@ void SeleniumApp::BuildMaterials()
 
 	auto tile0 = std::make_unique<Material>();
 	tile0->Name = "tile0";
-	tile0->cbIndex = 1;
+	tile0->bufferIndex = 1;
 	tile0->DiffuseHeapIndex = 2;
 	tile0->NormalHeapIndex = 3;
 	tile0->DiffuseAlbedo = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
@@ -741,7 +741,7 @@ void SeleniumApp::BuildMaterials()
 
 	auto mirror0 = std::make_unique<Material>();
 	mirror0->Name = "mirror0";
-	mirror0->cbIndex = 2;
+	mirror0->bufferIndex = 2;
 	mirror0->DiffuseHeapIndex = 4;
 	mirror0->NormalHeapIndex = 5;
 	mirror0->DiffuseAlbedo = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -751,7 +751,7 @@ void SeleniumApp::BuildMaterials()
 
 	auto sky = std::make_unique<Material>();
 	sky->Name = "sky";
-	sky->cbIndex = 3;
+	sky->bufferIndex = 3;
 	sky->DiffuseHeapIndex = 6;
 	sky->NormalHeapIndex = 7;
 	sky->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -770,7 +770,7 @@ void SeleniumApp::BuildMaterials()
 	{
 		auto mat = std::make_unique<Material>();
 		mat->Name = mSkinnedMatInfo[i].Name;
-		mat->cbIndex = cbIndex++;
+		mat->bufferIndex = cbIndex++;
 		mat->DiffuseHeapIndex = heapIndex++;
 		mat->NormalHeapIndex = heapIndex++;
 		mat->DiffuseAlbedo = mSkinnedMatInfo[i].DiffuseAlbedo;
@@ -1216,22 +1216,22 @@ void SeleniumApp::Update(const Timer& gt)
 		CloseHandle(eventHandle);
 	}
 
-	////
-	//// Animate the lights (and hence shadows).
-	////
+	//
+	// Animate the lights (and hence shadows).
+	//
 
-	//mLightRotationAngle += 0.1f*gt.DeltaTime();
+	mLightRotationAngle += 0.1f*gt.DeltaTime();
 
-	//XMMATRIX R = XMMatrixRotationY(mLightRotationAngle);
-	//for (int i = 0; i < 3; ++i)
-	//{
-	//	XMVECTOR lightDir = XMLoadFloat3(&mBaseLightDirections[i]);
-	//	lightDir = XMVector3TransformNormal(lightDir, R);
-	//	XMStoreFloat3(&mRotatedLightDirections[i], lightDir);
-	//}
+	XMMATRIX R = XMMatrixRotationY(mLightRotationAngle);
+	for (int i = 0; i < 3; ++i)
+	{
+		XMVECTOR lightDir = XMLoadFloat3(&mBaseLightDirections[i]);
+		lightDir = XMVector3TransformNormal(lightDir, R);
+		XMStoreFloat3(&mRotatedLightDirections[i], lightDir);
+	}
 
-	//AnimateMaterials(gt);
-	//UpdateObjectCBs(gt);
+	AnimateMaterials(gt);
+	UpdateObjectCBs(gt);
 	//UpdateSkinnedCBs(gt);
 	//UpdateMaterialBuffer(gt);
 	//UpdateShadowTransform(gt);
@@ -1388,4 +1388,34 @@ void SeleniumApp::OnKeyboardInput(const Timer& gt)
 		mCamera.Strafe(10.0f*dt);
 
 	mCamera.UpdateViewMatrix();
+}
+
+void SeleniumApp::AnimateMaterials(const Timer& gt)
+{
+
+}
+
+void SeleniumApp::UpdateObjectCBs(const Timer& gt)
+{
+	auto currObjectCB = mCurrFrameResource->ObjectCB.get();
+	for (auto& e : mAllRitems)
+	{
+		// Only update the cbuffer data if the constants have changed.  
+		// This needs to be tracked per frame resource.
+		if (e->NumFramesDirty > 0)
+		{
+			XMMATRIX world = XMLoadFloat4x4(&e->World);
+			XMMATRIX texTransform = XMLoadFloat4x4(&e->TexTransform);
+
+			ObjectConstants objConstants;
+			XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(world));
+			XMStoreFloat4x4(&objConstants.TexTransform, XMMatrixTranspose(texTransform));
+			objConstants.MaterialIndex = e->Mat->bufferIndex;
+
+			currObjectCB->CopyData(e->ObjCBIndex, objConstants);
+
+			// Next FrameResource need to be updated too.
+			e->NumFramesDirty--;
+		}
+	}
 }

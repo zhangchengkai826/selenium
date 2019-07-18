@@ -67,7 +67,7 @@ struct SsaoConstants
 	float SurfaceEpsilon = 0.05f;
 };
 
-struct MaterialConstants
+struct MaterialBufferData
 {
 	DirectX::XMFLOAT4 DiffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f };
 	DirectX::XMFLOAT3 FresnelR0 = { 0.01f, 0.01f, 0.01f };
@@ -101,7 +101,7 @@ public:
 	std::unique_ptr<UploadBuffer<ObjectConstants>> ObjectCB = nullptr;
 	std::unique_ptr<UploadBuffer<SkinnedConstants>> SkinnedCB = nullptr;
 	std::unique_ptr<UploadBuffer<SsaoConstants>> SsaoCB = nullptr;
-	std::unique_ptr<UploadBuffer<MaterialConstants>> MaterialCB = nullptr;
+	std::unique_ptr<UploadBuffer<MaterialBufferData>> MaterialBuffer = nullptr;
 
 	// Fence value to mark commands up to this fence point.  This lets us
 	// check if these frame resources are still in use by the GPU.
