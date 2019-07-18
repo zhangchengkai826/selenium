@@ -348,3 +348,110 @@ UINT Ssao::AmbientMapHeight()const
 {
 	return mRenderTargetHeight / 2;
 }
+
+void Ssao::ComputeSsao(
+	ID3D12GraphicsCommandList* cmdList,
+	FrameResource* currFrameResource,
+	int blurCount)
+{
+	cmdList->RSSetViewports(1, &mViewport);
+	cmdList->RSSetScissorRects(1, &mScissorRect);
+
+	// We compute the initial SSAO to AmbientMap0.
+
+	// Change to RENDER_TARGET.
+	cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mAmbientMap0.Get(),
+		D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET));
+
+	float clearValue[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	cmdList->ClearRenderTargetView(mhAmbientMap0CpuRtv, clearValue, 0, nullptr);
+
+	// Specify the buffers we are going to render to.
+	cmdList->OMSetRenderTargets(1, &mhAmbientMap0CpuRtv, true, nullptr);
+
+	// Bind the constant buffer for this pass.
+	auto ssaoCBAddress = currFrameResource->SsaoCB->Resource()->GetGPUVirtualAddress();
+	cmdList->SetGraphicsRootConstantBufferView(0, ssaoCBAddress);
+	cmdList->SetGraphicsRoot32BitConstant(1, 0, 0);
+
+	// Bind the normal and depth maps.
+	cmdList->SetGraphicsRootDescriptorTable(2, mhNormalMapGpuSrv);
+
+	// Bind the random vector map.
+	cmdList->SetGraphicsRootDescriptorTable(3, mhRandomVectorMapGpuSrv);
+
+	cmdList->SetPipelineState(mPso);
+
+	// Draw fullscreen quad.
+	cmdList->IASetVertexBuffers(0, 0, nullptr);
+	cmdList->IASetIndexBuffer(nullptr);
+	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	cmdList->DrawInstanced(6, 1, 0, 0);
+
+	// Change back to GENERIC_READ so we can read the texture in a shader.
+	cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mAmbientMap0.Get(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ));
+
+	BlurAmbientMap(cmdList, currFrameResource, blurCount);
+}
+
+void Ssao::BlurAmbientMap(ID3D12GraphicsCommandList* cmdList, FrameResource* currFrame, int blurCount)
+{
+	cmdList->SetPipelineState(mBlurPso);
+
+	auto ssaoCBAddress = currFrame->SsaoCB->Resource()->GetGPUVirtualAddress();
+	cmdList->SetGraphicsRootConstantBufferView(0, ssaoCBAddress);
+
+	for (int i = 0; i < blurCount; ++i)
+	{
+		BlurAmbientMap(cmdList, true);
+		BlurAmbientMap(cmdList, false);
+	}
+}
+
+void Ssao::BlurAmbientMap(ID3D12GraphicsCommandList* cmdList, bool horzBlur)
+{
+	ID3D12Resource* output = nullptr;
+	CD3DX12_GPU_DESCRIPTOR_HANDLE inputGpuSrv;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE outputCpuRtv;
+
+	// Ping-pong the two ambient map textures as we apply
+	// horizontal and vertical blur passes.
+	if (horzBlur == true)
+	{
+		output = mAmbientMap1.Get();
+		inputGpuSrv = mhAmbientMap0GpuSrv;
+		outputCpuRtv = mhAmbientMap1CpuRtv;
+		cmdList->SetGraphicsRoot32BitConstant(1, 1, 0);
+	}
+	else
+	{
+		output = mAmbientMap0.Get();
+		inputGpuSrv = mhAmbientMap1GpuSrv;
+		outputCpuRtv = mhAmbientMap0CpuRtv;
+		cmdList->SetGraphicsRoot32BitConstant(1, 0, 0);
+	}
+
+	cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(output,
+		D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET));
+
+	float clearValue[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	cmdList->ClearRenderTargetView(outputCpuRtv, clearValue, 0, nullptr);
+
+	cmdList->OMSetRenderTargets(1, &outputCpuRtv, true, nullptr);
+
+	// Bind the normal and depth maps.
+	cmdList->SetGraphicsRootDescriptorTable(2, mhNormalMapGpuSrv);
+
+	// Bind the input ambient map to second texture table.
+	cmdList->SetGraphicsRootDescriptorTable(3, inputGpuSrv);
+
+	// Draw fullscreen quad.
+	cmdList->IASetVertexBuffers(0, 0, nullptr);
+	cmdList->IASetIndexBuffer(nullptr);
+	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	cmdList->DrawInstanced(6, 1, 0, 0);
+
+	cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(output,
+		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ));
+}

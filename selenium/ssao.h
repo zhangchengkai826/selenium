@@ -3,6 +3,7 @@
 #include <wrl/client.h>
 #include <DirectXMath.h>
 #include "d3dx12.h"
+#include "frame_resource.h"
 
 class Ssao {
 public:
@@ -37,10 +38,25 @@ public:
 	void GetOffsetVectors(DirectX::XMFLOAT4 offsetVectors[14]);
 	std::vector<float> CalcGaussWeights(float sigma);
 
+	// Changes the render target to the Ambient render target and draws a fullscreen
+	// quad to kick off the pixel shader to compute the AmbientMap.  We still keep the
+	// main depth buffer binded to the pipeline, but depth buffer read/writes
+	// are disabled, as we do not need the depth buffer computing the Ambient map.
+	void ComputeSsao(
+		ID3D12GraphicsCommandList* cmdList,
+		FrameResource* currFrameResource,
+		int blurCount);
+
 private:
 	void BuildResources();
 	void BuildOffsetVectors();
 	void BuildRandomVectorTexture(ID3D12GraphicsCommandList* cmdList);
+
+	// Blurs the ambient map to smooth out the noise caused by only taking a
+	// few random samples per pixel.  We use an edge preserving blur so that 
+	// we do not blur across discontinuities--we want edges to remain edges.
+	void BlurAmbientMap(ID3D12GraphicsCommandList* cmdList, FrameResource* currFrame, int blurCount);
+	void BlurAmbientMap(ID3D12GraphicsCommandList* cmdList, bool horzBlur);
 
 public:
 	static const DXGI_FORMAT NormalMapFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;

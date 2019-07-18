@@ -1255,10 +1255,6 @@ void SeleniumApp::Draw(const Timer& gt)
 
 	mCmdList->SetGraphicsRootSignature(mRootSignature.Get());
 
-	//
-	// Shadow map pass.
-	//
-
 	// Bind all the materials used in this scene.  For structured buffers, we can bypass the heap and 
 	// set as a root descriptor.
 	auto matBuffer = mCurrFrameResource->MaterialBuffer->Resource();
@@ -1274,18 +1270,10 @@ void SeleniumApp::Draw(const Timer& gt)
 
 	DrawSceneToShadowMap();
 
-	//
-	// Normal/depth pass.
-	//
-
 	DrawNormalsAndDepth();
 
-	////
-	////
-	//// 
-
-	//mCommandList->SetGraphicsRootSignature(mSsaoRootSignature.Get());
-	//mSsao->ComputeSsao(mCommandList.Get(), mCurrFrameResource, 2);
+	mCmdList->SetGraphicsRootSignature(mSsaoRootSignature.Get());
+	mSsao->ComputeSsao(mCmdList.Get(), mCurrFrameResource, 2);
 
 	////
 	//// Main rendering pass.
