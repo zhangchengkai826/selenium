@@ -1,5 +1,6 @@
 #include "camera.h"
 #include <DirectXMath.h>
+#include <cassert>
 
 using namespace DirectX;
 
@@ -19,6 +20,11 @@ void Camera::SetLens(float fovY, float aspect, float zn, float zf) {
 
 	XMMATRIX P = XMMatrixPerspectiveFovLH(mFovY, mAspect, mNearZ, mFarZ);
 	XMStoreFloat4x4(&mProj, P);
+}
+
+XMFLOAT3 Camera::GetPosition3f()const
+{
+	return mPosition;
 }
 
 void Camera::SetPosition(float x, float y, float z)
@@ -120,3 +126,15 @@ void Camera::UpdateViewMatrix()
 		mViewDirty = false;
 	}
 }
+
+XMMATRIX Camera::GetView()const
+{
+	assert(!mViewDirty);
+	return XMLoadFloat4x4(&mView);
+}
+
+XMMATRIX Camera::GetProj()const
+{
+	return XMLoadFloat4x4(&mProj);
+}
+

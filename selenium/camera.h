@@ -5,6 +5,7 @@ class Camera {
 public:
 	Camera();
 
+	DirectX::XMFLOAT3 GetPosition3f()const;
 	void SetPosition(float x, float y, float z);
 
 	// Set frustum.
@@ -20,6 +21,10 @@ public:
 
 	// After modifying camera position/orientation, call to rebuild the view matrix.
 	void UpdateViewMatrix();
+
+	// Get View/Proj matrices.
+	DirectX::XMMATRIX GetView()const;
+	DirectX::XMMATRIX GetProj()const;
 
 private:
 	// Camera coordinate system with coordinates relative to world space.

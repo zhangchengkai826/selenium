@@ -10,6 +10,9 @@ public:
 		ID3D12GraphicsCommandList* cmdList,
 		UINT width, UINT height);
 
+	UINT AmbientMapWidth()const;
+	UINT AmbientMapHeight()const;
+
 	// Call when the backbuffer is resized.  
 	void OnResize(UINT newWidth, UINT newHeight);
 
@@ -24,6 +27,9 @@ public:
 
 	void SetPSOs(ID3D12PipelineState* ssaoPso, ID3D12PipelineState* ssaoBlurPso);
 
+	void GetOffsetVectors(DirectX::XMFLOAT4 offsetVectors[14]);
+	std::vector<float> CalcGaussWeights(float sigma);
+
 private:
 	void BuildResources();
 	void BuildOffsetVectors();
@@ -32,6 +38,8 @@ private:
 public:
 	static const DXGI_FORMAT NormalMapFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	static const DXGI_FORMAT AmbientMapFormat = DXGI_FORMAT_R16_UNORM;
+
+	static const int MaxBlurRadius = 5;
 
 private:
 	ID3D12Device* md3dDevice;

@@ -8,6 +8,9 @@ public:
 	ShadowMap(ID3D12Device *device, UINT width, UINT height);
 	ShadowMap(const ShadowMap &rhs) = delete;
 	ShadowMap &operator=(const ShadowMap &rhs) = delete;
+	
+	UINT Width()const;
+	UINT Height()const;
 
 	void BuildDescriptors(
 		CD3DX12_CPU_DESCRIPTOR_HANDLE hCpuSrv,

@@ -83,3 +83,14 @@ void ShadowMap::BuildDescriptors()
 	dsvDesc.Texture2D.MipSlice = 0;
 	md3dDevice->CreateDepthStencilView(mShadowMap.Get(), &dsvDesc, mhCpuDsv);
 }
+
+UINT ShadowMap::Width()const
+{
+	return mWidth;
+}
+
+UINT ShadowMap::Height()const
+{
+	return mHeight;
+}
+

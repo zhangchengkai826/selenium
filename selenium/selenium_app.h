@@ -58,6 +58,9 @@ private:
 	void UpdateSkinnedCB(const Timer& gt);
 	void UpdateMaterialBuffer(const Timer& gt);
 	void UpdateShadowTransform(const Timer& gt);
+	void UpdateMainPassCB(const Timer& gt);
+	void UpdateShadowPassCB(const Timer& gt);
+	void UpdateSsaoCB(const Timer& gt);
 
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> GetStaticSamplers();
 
@@ -127,12 +130,15 @@ private:
 	};
 	DirectX::XMFLOAT3 mRotatedLightDirections[3];
 
-	float mLightNearZ = 0.0f;
-	float mLightFarZ = 0.0f;
+	float mLightNearZ = 0.0f;  // light space
+	float mLightFarZ = 0.0f;  // light space
 	DirectX::XMFLOAT3 mLightPosW; // world space
 	DirectX::XMFLOAT4X4 mLightView = MathHelper::Identity4x4();
 	DirectX::XMFLOAT4X4 mLightProj = MathHelper::Identity4x4();
 	DirectX::XMFLOAT4X4 mShadowTransform = MathHelper::Identity4x4();
+
+	PassConstants mMainPassCB;  // index 0 of PassCB
+	PassConstants mShadowPassCB; // index 1 of PassCB
 
 	POINT mLastMousePos;
 };
