@@ -22,6 +22,12 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 	mApp = this;
 }
 
+D3DApp::~D3DApp()
+{
+	if (md3dDevice != nullptr)
+		FlushCommandQueue();
+}
+
 bool D3DApp::Initialize() {
 	if (!InitMainWindow())
 		return false;
@@ -496,4 +502,17 @@ void D3DApp::CalculateFrameStats()
 D3D12_CPU_DESCRIPTOR_HANDLE D3DApp::DepthStencilView()const
 {
 	return mDsvHeap->GetCPUDescriptorHandleForHeapStart();
+}
+
+ID3D12Resource* D3DApp::CurrentSwapChainBuffer()const
+{
+	return mSwapChainBuffer[mCurrSwapChainBuffer].Get();
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE D3DApp::CurrentSwapChainBufferView()const
+{
+	return CD3DX12_CPU_DESCRIPTOR_HANDLE(
+		mRtvHeap->GetCPUDescriptorHandleForHeapStart(),
+		mCurrSwapChainBuffer,
+		mRtvDescriptorSize);
 }

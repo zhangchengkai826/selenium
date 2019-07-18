@@ -22,10 +22,13 @@ protected:
 	D3DApp(HINSTANCE hInstance);
 	D3DApp(const D3DApp &rhs) = delete;
 	D3DApp &operator=(const D3DApp& rhs) = delete;
+	virtual ~D3DApp();
 	
 	virtual void Update(const Timer& gt) = 0;
 	virtual void Draw(const Timer& gt) = 0;
 
+	ID3D12Resource* CurrentSwapChainBuffer()const;
+	D3D12_CPU_DESCRIPTOR_HANDLE CurrentSwapChainBufferView()const;
 	D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView()const;
 
 	virtual void OnResize();

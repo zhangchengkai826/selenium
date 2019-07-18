@@ -25,6 +25,7 @@ public:
 	SeleniumApp(HINSTANCE hInstance);
 	SeleniumApp(const SeleniumApp &rhs) = delete;
 	SeleniumApp &operator=(const SeleniumApp &rhs) = delete;
+	~SeleniumApp()override;
 
 	bool Initialize()override;
 
