@@ -1274,11 +1274,11 @@ void SeleniumApp::Draw(const Timer& gt)
 
 	DrawSceneToShadowMap();
 
-	////
-	//// Normal/depth pass.
-	////
+	//
+	// Normal/depth pass.
+	//
 
-	//DrawNormalsAndDepth();
+	DrawNormalsAndDepth();
 
 	////
 	////
@@ -1435,6 +1435,41 @@ void SeleniumApp::DrawSceneToShadowMap()
 	// Change back to GENERIC_READ so we can read the texture in a shader.
 	mCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mShadowMap->Resource(),
 		D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ));
+}
+
+void SeleniumApp::DrawNormalsAndDepth()
+{
+	mCmdList->RSSetViewports(1, &mScreenViewport);
+	mCmdList->RSSetScissorRects(1, &mScissorRect);
+
+	auto normalMap = mSsao->NormalMap();
+	auto normalMapCpuRtv = mSsao->NormalMapCpuRtv();
+
+	// Change to RENDER_TARGET.
+	mCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(normalMap,
+		D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET));
+
+	// Clear the screen normal map and depth buffer.
+	float clearValue[] = { 0.0f, 0.0f, 1.0f, 0.0f };
+	mCmdList->ClearRenderTargetView(normalMapCpuRtv, clearValue, 0, nullptr);
+	mCmdList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+
+	// Specify the buffers we are going to render to.
+	mCmdList->OMSetRenderTargets(1, &normalMapCpuRtv, true, &DepthStencilView());
+
+	// Bind the constant buffer for this pass.
+	auto passCB = mCurrFrameResource->PassCB->Resource();
+	mCmdList->SetGraphicsRootConstantBufferView(2, passCB->GetGPUVirtualAddress());
+
+	mCmdList->SetPipelineState(mPSOs["drawNormals"].Get());
+	DrawRenderItems(mCmdList.Get(), mRitemLayer[(int)RenderLayer::Opaque]);
+
+	mCmdList->SetPipelineState(mPSOs["skinnedDrawNormals"].Get());
+	DrawRenderItems(mCmdList.Get(), mRitemLayer[(int)RenderLayer::SkinnedOpaque]);
+
+	// Change back to GENERIC_READ so we can read the texture in a shader.
+	mCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(normalMap,
+		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ));
 }
 
 void SeleniumApp::OnKeyboardInput(const Timer& gt)

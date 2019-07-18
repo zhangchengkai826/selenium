@@ -20,6 +20,31 @@ Ssao::Ssao(ID3D12Device *device,
 	BuildRandomVectorTexture(cmdList);
 }
 
+ID3D12Resource* Ssao::NormalMap()
+{
+	return mNormalMap.Get();
+}
+
+ID3D12Resource* Ssao::AmbientMap()
+{
+	return mAmbientMap0.Get();
+}
+
+CD3DX12_CPU_DESCRIPTOR_HANDLE Ssao::NormalMapCpuRtv()const
+{
+	return mhNormalMapCpuRtv;
+}
+
+CD3DX12_GPU_DESCRIPTOR_HANDLE Ssao::NormalMapGpuSrv()const
+{
+	return mhNormalMapGpuSrv;
+}
+
+CD3DX12_GPU_DESCRIPTOR_HANDLE Ssao::AmbientMapGpuSrv()const
+{
+	return mhAmbientMap0GpuSrv;
+}
+
 void Ssao::OnResize(UINT newWidth, UINT newHeight) {
 	if (mRenderTargetWidth != newWidth || mRenderTargetHeight != newHeight)
 	{

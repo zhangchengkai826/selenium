@@ -13,6 +13,13 @@ public:
 	UINT AmbientMapWidth()const;
 	UINT AmbientMapHeight()const;
 
+	ID3D12Resource* NormalMap();
+	ID3D12Resource* AmbientMap();
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE NormalMapCpuRtv()const;
+	CD3DX12_GPU_DESCRIPTOR_HANDLE NormalMapGpuSrv()const;
+	CD3DX12_GPU_DESCRIPTOR_HANDLE AmbientMapGpuSrv()const;
+
 	// Call when the backbuffer is resized.  
 	void OnResize(UINT newWidth, UINT newHeight);
 

@@ -26,6 +26,8 @@ protected:
 	virtual void Update(const Timer& gt) = 0;
 	virtual void Draw(const Timer& gt) = 0;
 
+	D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView()const;
+
 	virtual void OnResize();
 
 	virtual void CreateRtvAndDsvDescriptorHeaps();
