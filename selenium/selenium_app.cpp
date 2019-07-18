@@ -1024,7 +1024,7 @@ void SeleniumApp::BuildPSOs()
 	// Shadow map pass does not have a render target.
 	smapPsoDesc.RTVFormats[0] = DXGI_FORMAT_UNKNOWN;
 	smapPsoDesc.NumRenderTargets = 0;
-	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&smapPsoDesc, IID_PPV_ARGS(&mPSOs["shadow_opaque"])));
+	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&smapPsoDesc, IID_PPV_ARGS(&mPSOs["shadowOpaque"])));
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC skinnedSmapPsoDesc = smapPsoDesc;
 	skinnedSmapPsoDesc.InputLayout = { mSkinnedInputLayout.data(), (UINT)mSkinnedInputLayout.size() };
@@ -1038,7 +1038,7 @@ void SeleniumApp::BuildPSOs()
 		reinterpret_cast<BYTE*>(mShaders["shadowOpaquePS"]->GetBufferPointer()),
 		mShaders["shadowOpaquePS"]->GetBufferSize()
 	};
-	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&skinnedSmapPsoDesc, IID_PPV_ARGS(&mPSOs["skinnedShadow_opaque"])));
+	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&skinnedSmapPsoDesc, IID_PPV_ARGS(&mPSOs["shadowSkinnedOpaque"])));
 
 	//
 	// PSO for debug layer.
@@ -1420,10 +1420,10 @@ void SeleniumApp::DrawSceneToShadowMap()
 	D3D12_GPU_VIRTUAL_ADDRESS passCBAddress = passCB->GetGPUVirtualAddress() + 1 * passCBByteSize;
 	mCmdList->SetGraphicsRootConstantBufferView(2, passCBAddress);
 
-	mCmdList->SetPipelineState(mPSOs["shadow_opaque"].Get());
+	mCmdList->SetPipelineState(mPSOs["shadowOpaque"].Get());
 	DrawRenderItems(mCmdList.Get(), mRitemLayer[(int)RenderLayer::Opaque]);
 
-	mCmdList->SetPipelineState(mPSOs["skinnedShadow_opaque"].Get());
+	mCmdList->SetPipelineState(mPSOs["shadowSkinnedOpaque"].Get());
 	DrawRenderItems(mCmdList.Get(), mRitemLayer[(int)RenderLayer::SkinnedOpaque]);
 
 	// Change back to GENERIC_READ so we can read the texture in a shader.
