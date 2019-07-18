@@ -1240,15 +1240,15 @@ void SeleniumApp::Update(const Timer& gt)
 
 void SeleniumApp::Draw(const Timer& gt)
 {
-	//auto cmdListAlloc = mCurrFrameResource->CmdListAlloc;
+	auto cmdAllocator = mCurrFrameResource->CmdAllocator;
 
-	//// Reuse the memory associated with command recording.
-	//// We can only reset when the associated command lists have finished execution on the GPU.
-	//ThrowIfFailed(cmdListAlloc->Reset());
+	// Reuse the memory associated with command recording.
+	// We can only reset when the associated command lists have finished execution on the GPU.
+	ThrowIfFailed(cmdAllocator->Reset());
 
-	//// A command list can be reset after it has been added to the command queue via ExecuteCommandList.
-	//// Reusing the command list reuses memory.
-	//ThrowIfFailed(mCommandList->Reset(cmdListAlloc.Get(), mPSOs["opaque"].Get()));
+	// A command list can be reset after it has been added to the command queue via ExecuteCommandList.
+	// Reusing the command list reuses memory.
+	ThrowIfFailed(mCmdList->Reset(cmdAllocator.Get(), mPSOs["opaque"].Get()));
 
 	//ID3D12DescriptorHeap* descriptorHeaps[] = { mSrvDescriptorHeap.Get() };
 	//mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
@@ -1348,16 +1348,16 @@ void SeleniumApp::Draw(const Timer& gt)
 	//mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
 	//	D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 
-	//// Done recording commands.
-	//ThrowIfFailed(mCommandList->Close());
+	// Done recording commands.
+	ThrowIfFailed(mCmdList->Close());
 
-	//// Add the command list to the queue for execution.
-	//ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
-	//mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+	// Add the command list to the queue for execution.
+	ID3D12CommandList* cmdLists[] = { mCmdList.Get() };
+	mCmdQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 
-	//// Swap the back and front buffers
-	//ThrowIfFailed(mSwapChain->Present(0, 0));
-	//mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
+	// Swap the back and front buffers
+	ThrowIfFailed(mSwapChain->Present(1, 0));
+	mCurrSwapChainBuffer = (mCurrSwapChainBuffer + 1) % SwapChainBufferCount;
 
 	// Advance the fence value to mark commands up to this fence point.
 	mCurrentFence++;
