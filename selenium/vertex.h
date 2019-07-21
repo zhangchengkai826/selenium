@@ -35,6 +35,6 @@ struct SkinnedVertex
 	DirectX::XMFLOAT3 Normal;
 	DirectX::XMFLOAT2 TexC;
 	DirectX::XMFLOAT3 TangentU;
-	DirectX::XMFLOAT4 BoneWeights;
+	DirectX::XMFLOAT3 BoneWeights;
 	BYTE BoneIndices[4];
 };

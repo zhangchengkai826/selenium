@@ -106,7 +106,6 @@ void M3DLoader::ReadSkinnedVertices(std::ifstream& fin, UINT numVertices, std::v
 		vertices[i].BoneWeights.x = weights[0];
 		vertices[i].BoneWeights.y = weights[1];
 		vertices[i].BoneWeights.z = weights[2];
-		vertices[i].BoneWeights.w = weights[3];
 
 		vertices[i].BoneIndices[0] = (BYTE)boneIndices[0];
 		vertices[i].BoneIndices[1] = (BYTE)boneIndices[1];
